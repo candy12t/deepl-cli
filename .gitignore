@@ -1,0 +1,2 @@
+config/data.yaml.d/*.yaml
+statik/statik.go

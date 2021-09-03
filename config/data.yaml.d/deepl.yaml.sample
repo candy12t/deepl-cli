@@ -1,0 +1,5 @@
+# -*- mode: yaml -*-
+# vi: set ft=yaml :
+
+auth_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+endpoint: "https://api-free.deepl.com/v2/translate"
