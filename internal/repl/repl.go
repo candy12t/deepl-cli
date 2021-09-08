@@ -1,7 +1,10 @@
 package repl
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/candy12t/deepl-cli/internal/deepl"
 )
@@ -9,13 +12,18 @@ import (
 const PROMPT = ">> "
 
 func Repl(sourceLang, targetLang string) {
+	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Printf(PROMPT)
-		var text string
-		fmt.Scanf("%s", &text)
+		if scanned := scanner.Scan(); !scanned {
+			return
+		}
 
+		text := scanner.Text()
 		d := deepl.New(text, sourceLang, targetLang)
 		resp := d.Data()
-		fmt.Println(resp.TranslatedText())
+		out := os.Stdout
+		io.WriteString(out, resp.TranslatedText())
+		io.WriteString(out, "\n")
 	}
 }
