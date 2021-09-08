@@ -8,9 +8,8 @@ import (
 	"net/url"
 
 	"github.com/candy12t/deepl-cli/internal/config"
+	"github.com/candy12t/deepl-cli/internal/host"
 )
-
-const hostName = "https://api-free.deepl.com/v2/translate"
 
 type DeeplRequest struct {
 	AuthKey    string
@@ -44,7 +43,7 @@ func (dr *DeeplRequest) Post() ([]byte, error) {
 		"source_lang": {dr.SourceLang},
 		"target_lang": {dr.TargetLang},
 	}
-	resp, err := http.PostForm(hostName, values)
+	resp, err := http.PostForm(host.TranslateEndpoint(), values)
 	if err != nil {
 		return nil, err
 	}
