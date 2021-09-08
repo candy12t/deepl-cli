@@ -10,6 +10,8 @@ import (
 	"github.com/candy12t/deepl-cli/internal/config"
 )
 
+const hostName = "https://api-free.deepl.com/v2/translate"
+
 type DeeplRequest struct {
 	AuthKey    string
 	Text       string
@@ -26,7 +28,7 @@ type DeeplResponse struct {
 
 func New(text, source, target string) *DeeplRequest {
 	dr := &DeeplRequest{
-		AuthKey:    config.DeeplConfigData().AuthKey,
+		AuthKey:    config.AuthKey(),
 		Text:       text,
 		SourceLang: source,
 		TargetLang: target,
@@ -42,7 +44,7 @@ func (dr *DeeplRequest) Post() ([]byte, error) {
 		"source_lang": {dr.SourceLang},
 		"target_lang": {dr.TargetLang},
 	}
-	resp, err := http.PostForm(config.DeeplConfigData().Endpoint, values)
+	resp, err := http.PostForm(hostName, values)
 	if err != nil {
 		return nil, err
 	}
