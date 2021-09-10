@@ -6,24 +6,26 @@ import (
 	"io"
 	"os"
 
-	"github.com/candy12t/deepl-cli/internal/deepl"
+	"github.com/candy12t/deepl-cli/api"
 )
 
 const PROMPT = ">> "
 
-func Repl(sourceLang, targetLang string) {
+func Repl(sourceLang, targetLang string) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Printf(PROMPT)
 		if scanned := scanner.Scan(); !scanned {
-			return
+			return fmt.Errorf("can not scan")
 		}
 
 		text := scanner.Text()
-		d := deepl.New(text, sourceLang, targetLang)
-		resp := d.Data()
+		tr, err := api.Translate(text, sourceLang, targetLang)
+		if err != nil {
+			return err
+		}
 		out := os.Stdout
-		io.WriteString(out, resp.TranslatedText())
+		io.WriteString(out, tr.TranslatedText())
 		io.WriteString(out, "\n")
 	}
 }
