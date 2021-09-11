@@ -23,7 +23,5 @@ func main() {
 	flag.Parse()
 	fmt.Printf("Translate text from %s to %s\n", sourceLang, targetLang)
 
-	if err := repl.Repl(sourceLang, targetLang); err != nil {
-		log.Fatal(err)
-	}
+	repl.Repl(sourceLang, targetLang)
 }
