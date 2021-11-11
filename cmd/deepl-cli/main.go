@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	if err := config.ParseConfig(); err != nil {
+	if err := config.ParseConfig(config.ConfigFile()); err != nil {
 		log.Fatal(err)
 	}
-	defaultSourceLang, defaultTargetLang := config.DefaultLang()
+	defaultSourceLang, defaultTargetLang := config.DefaultLangs()
 
 	var sourceLang, targetLang string
 	flag.StringVar(&sourceLang, "source", defaultSourceLang, "Language of the source text.")
