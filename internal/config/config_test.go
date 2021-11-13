@@ -1,12 +1,13 @@
 package config
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 )
 
 func TestParseConfig(t *testing.T) {
-	t.Run("parse config yml file", func(t *testing.T) {
+	t.Run("parse config yml file, accoutn plan is `free`", func(t *testing.T) {
 		wantConfig := Config{
 			Account: Account{
 				AuthKey:     "test-auth-key",
@@ -16,9 +17,33 @@ func TestParseConfig(t *testing.T) {
 				SourceLang: "EN",
 				TargetLang: "JA",
 			},
+			BaseURL: "https://api-free.deepl.com/v2",
 		}
 
-		configPath := filepath.Join("testdata", "config.yaml")
+		configPath := filepath.Join(projectDirPath(), "testdata", "config", "free.yaml")
+		err := ParseConfig(configPath)
+		gotConfig := CachedConfig()
+
+		assertNoError(t, err)
+		assertConfig(t, gotConfig, wantConfig)
+
+		cleanCachedConfig(t)
+	})
+
+	t.Run("parse config yml file, accoutn plan is `pro`", func(t *testing.T) {
+		wantConfig := Config{
+			Account: Account{
+				AuthKey:     "test-auth-key",
+				AccountPlan: "pro",
+			},
+			DefaultLang: DefaultLang{
+				SourceLang: "EN",
+				TargetLang: "JA",
+			},
+			BaseURL: "https://api.deepl.com/v2",
+		}
+
+		configPath := filepath.Join(projectDirPath(), "testdata", "config", "pro.yaml")
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
@@ -31,7 +56,7 @@ func TestParseConfig(t *testing.T) {
 	t.Run("can not read config file", func(t *testing.T) {
 		wantConfig := Config{}
 
-		configPath := filepath.Join("testdata", "not_read.yaml")
+		configPath := filepath.Join(projectDirPath(), "testdata", "config", "not_read.yaml")
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
@@ -44,7 +69,7 @@ func TestParseConfig(t *testing.T) {
 	t.Run("can not unmarshal config file", func(t *testing.T) {
 		wantConfig := Config{}
 
-		configPath := filepath.Join("testdata", "not_unmarshal.yaml")
+		configPath := filepath.Join(projectDirPath(), "testdata", "config", "not_unmarshal.yaml")
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
@@ -56,6 +81,7 @@ func TestParseConfig(t *testing.T) {
 }
 
 func assertConfig(t *testing.T, got, want Config) {
+	t.Helper()
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
@@ -86,6 +112,11 @@ func assertUnmarshalError(t *testing.T, got, want error) {
 	if got == nil || got == ErrNotReadFile {
 		t.Fatal("expected to get error")
 	}
+}
+
+func projectDirPath() string {
+	currentDirPath, _ := os.Getwd()
+	return filepath.Join(currentDirPath, "..", "..")
 }
 
 func cleanCachedConfig(t *testing.T) {

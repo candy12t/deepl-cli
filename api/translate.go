@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/candy12t/deepl-cli/internal/host"
+	"github.com/candy12t/deepl-cli/internal/config"
 )
 
 type TranslateResponse struct {
@@ -19,7 +19,7 @@ func Translate(text, sourceLang, TargetLang string) (*TranslateResponse, error) 
 
 	translate := &TranslateResponse{}
 	err := Request(
-		host.TranslateEndpoint(),
+		config.BaseURL()+"/translate",
 		"POST",
 		strings.NewReader(values.Encode()),
 		translate,

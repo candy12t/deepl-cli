@@ -8,20 +8,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const (
-	ErrNotReadFile  = ConfigErr("can not read config file")
-	ErrNotUnmarshal = ConfigErr("can not unmarshal config data")
-)
-
-type ConfigErr string
-
-func (c ConfigErr) Error() string {
-	return string(c)
-}
-
 type Config struct {
 	Account     Account     `yaml:"account"`
 	DefaultLang DefaultLang `yaml:"default_lang"`
+	BaseURL     string
 }
 
 type Account struct {
@@ -36,6 +26,10 @@ type DefaultLang struct {
 
 var config Config
 
+func CachedConfig() Config {
+	return config
+}
+
 func ConfigFile() string {
 	d, _ := os.UserHomeDir()
 	return filepath.Join(d, ".config", "deepl-cli", "config.yaml")
@@ -46,19 +40,17 @@ func ParseConfig(filepath string) error {
 	if err != nil {
 		return ErrNotReadFile
 	}
+
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		return ErrNotUnmarshal
 	}
-	return nil
-}
+	config.BaseURL = baseURL()
 
-func CachedConfig() Config {
-	return config
+	return nil
 }
 
 func DefaultLangs() (string, string) {
 	return config.DefaultLang.SourceLang, config.DefaultLang.TargetLang
 }
-
-func AccountPlan() string { return CachedConfig().Account.AccountPlan }
-func AuthKey() string     { return CachedConfig().Account.AuthKey }
+func AuthKey() string { return CachedConfig().Account.AuthKey }
+func BaseURL() string { return CachedConfig().BaseURL }
