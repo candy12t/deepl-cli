@@ -2,17 +2,24 @@ package repl
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/candy12t/deepl-cli/api"
+	"github.com/candy12t/deepl-cli/internal/config"
+	"github.com/candy12t/deepl-cli/internal/deepl"
 )
 
 const PROMPT = ">> "
 
 func Repl(sourceLang, targetLang string) {
 	scanner := bufio.NewScanner(os.Stdin)
+	client, err := deepl.NewClient(config.BaseURL(), config.AuthKey())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	for {
 		fmt.Printf(PROMPT)
 		if scanned := scanner.Scan(); !scanned {
@@ -23,12 +30,13 @@ func Repl(sourceLang, targetLang string) {
 		if validedText, err := validText(text); err != nil {
 			fmt.Println(err)
 		} else {
-			tr, err := api.Translate(validedText, sourceLang, targetLang)
+			ctx := context.Background()
+			tr, err := client.Translate(ctx, validedText, sourceLang, targetLang)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			fmt.Println(tr.TranslatedText())
+			fmt.Println(tr)
 		}
 	}
 }
