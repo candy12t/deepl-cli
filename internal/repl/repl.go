@@ -20,6 +20,7 @@ func Repl(sourceLang, targetLang string) {
 		fmt.Println(err)
 		return
 	}
+
 	for {
 		fmt.Printf(PROMPT)
 		if scanned := scanner.Scan(); !scanned {
@@ -27,17 +28,18 @@ func Repl(sourceLang, targetLang string) {
 		}
 
 		text := scanner.Text()
-		if validedText, err := validText(text); err != nil {
+		validedText, err := validText(text)
+		if err != nil {
 			fmt.Println(err)
-		} else {
-			ctx := context.Background()
-			t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Println(t.TranslateText())
 		}
+
+		ctx := context.Background()
+		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(t.TranslateText())
 	}
 }
 
