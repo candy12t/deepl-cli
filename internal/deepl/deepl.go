@@ -11,6 +11,8 @@ import (
 	"path"
 )
 
+var ErrMissingAuthKey = errors.New("missing DeepL authKey")
+
 type Client struct {
 	BaseURL    *url.URL
 	HTTPClient *http.Client
@@ -19,7 +21,7 @@ type Client struct {
 
 func NewClient(rawBaseURL, authKey string) (*Client, error) {
 	if len(authKey) == 0 {
-		return nil, errors.New("missing DeepL authkey")
+		return nil, ErrMissingAuthKey
 	}
 
 	baseURL, err := url.ParseRequestURI(rawBaseURL)
