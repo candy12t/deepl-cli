@@ -31,12 +31,12 @@ func Repl(sourceLang, targetLang string) {
 			fmt.Println(err)
 		} else {
 			ctx := context.Background()
-			tr, err := client.Translate(ctx, validedText, sourceLang, targetLang)
+			t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			fmt.Println(tr)
+			fmt.Println(t.TranslateText())
 		}
 	}
 }
