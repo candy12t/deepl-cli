@@ -57,10 +57,6 @@ func decodeBody(resp *http.Response, out interface{}) error {
 		return HandleHTTPError(resp)
 	}
 
-	if resp.StatusCode == http.StatusNoContent {
-		return nil
-	}
-
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
 }
