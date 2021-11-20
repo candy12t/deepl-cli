@@ -25,7 +25,7 @@ func TestParseConfig(t *testing.T) {
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
-		assertNoError(t, err)
+		test.AssertError(t, err, nil)
 		assertConfig(t, gotConfig, wantConfig)
 
 		cleanCachedConfig(t)
@@ -48,7 +48,7 @@ func TestParseConfig(t *testing.T) {
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
-		assertNoError(t, err)
+		test.AssertError(t, err, nil)
 		assertConfig(t, gotConfig, wantConfig)
 
 		cleanCachedConfig(t)
@@ -61,7 +61,7 @@ func TestParseConfig(t *testing.T) {
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
-		assertReadFileError(t, err, ErrNotReadFile)
+		test.AssertError(t, err, ErrNotReadFile)
 		assertConfig(t, gotConfig, wantConfig)
 
 		cleanCachedConfig(t)
@@ -74,7 +74,7 @@ func TestParseConfig(t *testing.T) {
 		err := ParseConfig(configPath)
 		gotConfig := CachedConfig()
 
-		assertUnmarshalError(t, err, ErrNotUnmarshal)
+		test.AssertError(t, err, ErrNotUnmarshal)
 		assertConfig(t, gotConfig, wantConfig)
 
 		cleanCachedConfig(t)
@@ -85,33 +85,6 @@ func assertConfig(t *testing.T, got, want Config) {
 	t.Helper()
 	if got != want {
 		t.Fatalf("got %v, want %v", got, want)
-	}
-}
-
-func assertNoError(t *testing.T, got error) {
-	t.Helper()
-	if got != nil {
-		t.Fatalf("got error but didn't want one")
-	}
-}
-
-func assertReadFileError(t *testing.T, got, want error) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got error %q want %q", got, want)
-	}
-	if got == nil || got == ErrNotUnmarshal {
-		t.Fatal("expected to get error")
-	}
-}
-
-func assertUnmarshalError(t *testing.T, got, want error) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got error %q want %q", got, want)
-	}
-	if got == nil || got == ErrNotReadFile {
-		t.Fatal("expected to get error")
 	}
 }
 

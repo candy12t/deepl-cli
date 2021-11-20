@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/candy12t/deepl-cli/test"
 )
 
 const defaultBaseURL = "https://api.deepl.com/v2"
@@ -14,7 +16,7 @@ const testAuthKey = "test-auth-key"
 func TestNewClient(t *testing.T) {
 	t.Run("success new deepl client", func(t *testing.T) {
 		c, err := NewClient(defaultBaseURL, testAuthKey)
-		testErr(t, err, nil)
+		test.AssertError(t, err, nil)
 
 		if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
 			t.Errorf("NewClient BaseURL is %v, want %v", got, want)
@@ -23,7 +25,7 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("failed new deepl client because missing deepl authkey", func(t *testing.T) {
 		_, err := NewClient(defaultBaseURL, "")
-		testErr(t, err, ErrMissingAuthKey)
+		test.AssertError(t, err, ErrMissingAuthKey)
 	})
 
 	t.Run("failed new deepl client because don't parse url", func(t *testing.T) {
@@ -72,18 +74,5 @@ func testURLParseErr(t *testing.T, err error) {
 	t.Helper()
 	if err, ok := err.(*url.Error); !ok || err.Op != "parse" {
 		t.Errorf("Expected URL parse error, got %+v", err)
-	}
-}
-
-func testErr(t *testing.T, got, want error) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got error is %s, want %s", got, want)
-	}
-	if got == nil {
-		if want == nil {
-			return
-		}
-		t.Fatal("expected to get an error.")
 	}
 }

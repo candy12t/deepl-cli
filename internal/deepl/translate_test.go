@@ -7,6 +7,8 @@ import (
 	"path"
 	"reflect"
 	"testing"
+
+	"github.com/candy12t/deepl-cli/test"
 )
 
 func TestTranslate(t *testing.T) {
@@ -30,7 +32,7 @@ func TestTranslate(t *testing.T) {
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
 
-		testErr(t, err, nil)
+		test.AssertError(t, err, nil)
 		testTranslate(t, got, want)
 	})
 
@@ -56,7 +58,7 @@ func TestTranslate(t *testing.T) {
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "")
 
-		testErr(t, err, want)
+		test.AssertError(t, err, want)
 		testTranslate(t, got, nil)
 	})
 
@@ -80,7 +82,7 @@ func TestTranslate(t *testing.T) {
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
 
-		testErr(t, err, want)
+		test.AssertError(t, err, want)
 		testTranslate(t, got, nil)
 	})
 }
