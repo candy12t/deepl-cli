@@ -58,6 +58,31 @@ func TestTranslate(t *testing.T) {
 			t.Errorf("got error is %s, want %s", err, want)
 		}
 	})
+
+	t.Run("failed translate because incorrect DeepL AuthKey", func(t *testing.T) {
+		client, mux, teardown := setup()
+		defer teardown()
+
+		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
+			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
+			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testAuthKey))
+			testMethod(t, r, "POST")
+			testBody(t, r, "source_lang=EN&target_lang=JA&text=hello")
+
+			w.WriteHeader(http.StatusForbidden)
+		})
+
+		ctx := context.Background()
+		got, err := client.Translate(ctx, "hello", "EN", "JA")
+		if got != nil {
+			t.Errorf("Expected no response, got %s", got)
+		}
+
+		want := fmt.Sprintf("HTTP %d: %s (%s)", http.StatusForbidden, fmt.Sprintf("403 Forbidden"), client.BaseURL.String()+TRANSLATE)
+		if err.Error() != want {
+			t.Errorf("got error is %s, want %s", err, want)
+		}
+	})
 }
 
 func testTranslate(t *testing.T, got, want *Translate) {
