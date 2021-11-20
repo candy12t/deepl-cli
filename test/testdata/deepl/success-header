@@ -1,7 +1,0 @@
-HTTP/2 200 
-server: nginx
-date: Sun, 14 Nov 2021 13:29:37 GMT
-content-type: application/json
-content-length: 77
-access-control-allow-origin: *
-
