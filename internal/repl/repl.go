@@ -5,19 +5,20 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/candy12t/deepl-cli/internal/config"
 	"github.com/candy12t/deepl-cli/internal/deepl"
+	"github.com/candy12t/deepl-cli/internal/validation"
 )
 
 const PROMPT = ">> "
 
 func Repl(sourceLang, targetLang string) {
 	scanner := bufio.NewScanner(os.Stdin)
+
 	client, err := deepl.NewClient(config.BaseURL(), config.AuthKey())
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		return
 	}
 
@@ -28,25 +29,17 @@ func Repl(sourceLang, targetLang string) {
 		}
 
 		text := scanner.Text()
-		validedText, err := validText(text)
+		validedText, err := validation.ValidText(text)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprint(os.Stderr, err)
 		}
 
 		ctx := context.Background()
 		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			return
 		}
 		fmt.Println(t.TranslateText())
 	}
-}
-
-func validText(text string) (string, error) {
-	validedText := strings.TrimSpace(text)
-	if len(validedText) == 0 {
-		return "", fmt.Errorf("Error: text length is 0")
-	}
-	return validedText, nil
 }
