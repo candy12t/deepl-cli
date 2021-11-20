@@ -8,77 +8,69 @@ import (
 )
 
 func TestParseConfig(t *testing.T) {
-	t.Run("parse config yml file, accoutn plan is `free`", func(t *testing.T) {
-		wantConfig := Config{
-			Account: Account{
-				AuthKey:     "test-auth-key",
-				AccountPlan: "free",
+	tests := []struct {
+		name            string
+		inputConfigFile string
+		wantConfig      Config
+		wantErr         error
+	}{
+		{
+			name:            "parse config yml file, accoutn plan is `free`",
+			inputConfigFile: "free.yaml",
+			wantConfig: Config{
+				Account: Account{
+					AuthKey:     "test-auth-key",
+					AccountPlan: "free",
+				},
+				DefaultLang: DefaultLang{
+					SourceLang: "EN",
+					TargetLang: "JA",
+				},
+				BaseURL: "https://api-free.deepl.com/v2",
 			},
-			DefaultLang: DefaultLang{
-				SourceLang: "EN",
-				TargetLang: "JA",
+			wantErr: nil,
+		},
+		{
+			name:            "parse config yml file, accoutn plan is `pro`",
+			inputConfigFile: "pro.yaml",
+			wantConfig: Config{
+				Account: Account{
+					AuthKey:     "test-auth-key",
+					AccountPlan: "pro",
+				},
+				DefaultLang: DefaultLang{
+					SourceLang: "EN",
+					TargetLang: "JA",
+				},
+				BaseURL: "https://api.deepl.com/v2",
 			},
-			BaseURL: "https://api-free.deepl.com/v2",
-		}
+			wantErr: nil,
+		},
+		{
+			name:            "can not read config file",
+			inputConfigFile: "not_read.yaml",
+			wantConfig:      Config{},
+			wantErr:         ErrNotReadFile,
+		},
+		{
+			name:            "can not unmarshal config file",
+			inputConfigFile: "not_unmarshal.yaml",
+			wantConfig:      Config{},
+			wantErr:         ErrNotUnmarshal,
+		},
+	}
 
-		configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", "free.yaml")
-		err := ParseConfig(configPath)
-		gotConfig := CachedConfig()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer teardownConfig(t)
 
-		test.AssertError(t, err, nil)
-		assertConfig(t, gotConfig, wantConfig)
+			wantConfig := tt.wantConfig
+			configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", tt.inputConfigFile)
 
-		cleanCachedConfig(t)
-	})
-
-	t.Run("parse config yml file, accoutn plan is `pro`", func(t *testing.T) {
-		wantConfig := Config{
-			Account: Account{
-				AuthKey:     "test-auth-key",
-				AccountPlan: "pro",
-			},
-			DefaultLang: DefaultLang{
-				SourceLang: "EN",
-				TargetLang: "JA",
-			},
-			BaseURL: "https://api.deepl.com/v2",
-		}
-
-		configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", "pro.yaml")
-		err := ParseConfig(configPath)
-		gotConfig := CachedConfig()
-
-		test.AssertError(t, err, nil)
-		assertConfig(t, gotConfig, wantConfig)
-
-		cleanCachedConfig(t)
-	})
-
-	t.Run("can not read config file", func(t *testing.T) {
-		wantConfig := Config{}
-
-		configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", "not_read.yaml")
-		err := ParseConfig(configPath)
-		gotConfig := CachedConfig()
-
-		test.AssertError(t, err, ErrNotReadFile)
-		assertConfig(t, gotConfig, wantConfig)
-
-		cleanCachedConfig(t)
-	})
-
-	t.Run("can not unmarshal config file", func(t *testing.T) {
-		wantConfig := Config{}
-
-		configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", "not_unmarshal.yaml")
-		err := ParseConfig(configPath)
-		gotConfig := CachedConfig()
-
-		test.AssertError(t, err, ErrNotUnmarshal)
-		assertConfig(t, gotConfig, wantConfig)
-
-		cleanCachedConfig(t)
-	})
+			test.AssertError(t, ParseConfig(configPath), tt.wantErr)
+			assertConfig(t, CachedConfig(), wantConfig)
+		})
+	}
 }
 
 func assertConfig(t *testing.T, got, want Config) {
@@ -88,7 +80,7 @@ func assertConfig(t *testing.T, got, want Config) {
 	}
 }
 
-func cleanCachedConfig(t *testing.T) {
+func teardownConfig(t *testing.T) {
 	t.Cleanup(func() {
 		config = Config{}
 	})
