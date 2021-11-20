@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
 type HTTPError struct {
 	StatusCode int
-	RequestURL *url.URL
+	RequestURL string
 	Message    string
 }
 
@@ -25,7 +24,7 @@ func (err HTTPError) Error() string {
 func HandleHTTPError(resp *http.Response) error {
 	httpError := HTTPError{
 		StatusCode: resp.StatusCode,
-		RequestURL: resp.Request.URL,
+		RequestURL: resp.Request.URL.String(),
 	}
 
 	if !strings.Contains(resp.Header.Get("Content-Type"), "json") {

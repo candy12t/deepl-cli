@@ -14,7 +14,7 @@ const testAuthKey = "test-auth-key"
 func TestNewClient(t *testing.T) {
 	t.Run("success new deepl client", func(t *testing.T) {
 		c, err := NewClient(defaultBaseURL, testAuthKey)
-		testNoErr(t, err)
+		testErr(t, err, nil)
 
 		if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
 			t.Errorf("NewClient BaseURL is %v, want %v", got, want)
@@ -23,13 +23,11 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("failed new deepl client because missing deepl authkey", func(t *testing.T) {
 		_, err := NewClient(defaultBaseURL, "")
-		testErr(t, err)
-		testMissingAuthKeyErr(t, err)
+		testErr(t, err, ErrMissingAuthKey)
 	})
 
 	t.Run("failed new deepl client because don't parse url", func(t *testing.T) {
 		_, err := NewClient("%", testAuthKey)
-		testErr(t, err)
 		testURLParseErr(t, err)
 	})
 }
@@ -77,23 +75,15 @@ func testURLParseErr(t *testing.T, err error) {
 	}
 }
 
-func testMissingAuthKeyErr(t *testing.T, err error) {
+func testErr(t *testing.T, got, want error) {
 	t.Helper()
-	if err != ErrMissingAuthKey {
-		t.Fatalf("got err is %v, want %v", err, ErrMissingAuthKey)
+	if got != want {
+		t.Errorf("got error is %s, want %s", got, want)
 	}
-}
-
-func testNoErr(t *testing.T, err error) {
-	t.Helper()
-	if err != nil {
-		t.Fatal("got an error but didn't want one")
-	}
-}
-
-func testErr(t *testing.T, err error) {
-	t.Helper()
-	if err == nil {
-		t.Errorf("Expected error to be returned")
+	if got == nil {
+		if want == nil {
+			return
+		}
+		t.Fatal("expected to get an error.")
 	}
 }

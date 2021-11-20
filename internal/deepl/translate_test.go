@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"path"
 	"reflect"
 	"testing"
 )
@@ -24,11 +25,12 @@ func TestTranslate(t *testing.T) {
 			w.Write([]byte(`{"translations":[{"detected_source_language":"EN","text":"こんにちわ"}]}`))
 		})
 
+		want := &Translate{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
+
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
-		testNoErr(t, err)
 
-		want := &Translate{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
+		testErr(t, err, nil)
 		testTranslate(t, got, want)
 	})
 
@@ -47,16 +49,15 @@ func TestTranslate(t *testing.T) {
 			w.Write([]byte(`{"message":"\"Value for 'target_lang' not supported.\""}`))
 		})
 
+		u := *client.BaseURL
+		u.Path = path.Join(client.BaseURL.Path, TRANSLATE)
+		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
+
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "")
-		if got != nil {
-			t.Errorf("Expected no response, got %s", got)
-		}
 
-		want := fmt.Sprintf("HTTP %d: %s (%s)", http.StatusBadRequest, fmt.Sprintf(`"Value for 'target_lang' not supported."`), client.BaseURL.String()+TRANSLATE)
-		if err.Error() != want {
-			t.Errorf("got error is %s, want %s", err, want)
-		}
+		testErr(t, err, want)
+		testTranslate(t, got, nil)
 	})
 
 	t.Run("failed translate because incorrect DeepL AuthKey", func(t *testing.T) {
@@ -72,16 +73,15 @@ func TestTranslate(t *testing.T) {
 			w.WriteHeader(http.StatusForbidden)
 		})
 
+		u := *client.BaseURL
+		u.Path = path.Join(client.BaseURL.Path, TRANSLATE)
+		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
+
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
-		if got != nil {
-			t.Errorf("Expected no response, got %s", got)
-		}
 
-		want := fmt.Sprintf("HTTP %d: %s (%s)", http.StatusForbidden, fmt.Sprintf("403 Forbidden"), client.BaseURL.String()+TRANSLATE)
-		if err.Error() != want {
-			t.Errorf("got error is %s, want %s", err, want)
-		}
+		testErr(t, err, want)
+		testTranslate(t, got, nil)
 	})
 }
 
@@ -89,5 +89,11 @@ func testTranslate(t *testing.T, got, want *Translate) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("translated text is %s, want %s", got, want)
+	}
+	if got == nil {
+		if want == nil {
+			return
+		}
+		t.Fatal("expected to get an translate response.")
 	}
 }
