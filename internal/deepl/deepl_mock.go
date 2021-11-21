@@ -2,6 +2,7 @@ package deepl
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 )
 
@@ -27,5 +28,8 @@ func NewMockClient(rawBaseURL, authKey string) (*MockClient, error) {
 }
 
 func (mc *MockClient) Translate(ctx context.Context, text, sourceLang, targetLang string) (*Translate, error) {
+	if len(targetLang) == 0 {
+		return nil, fmt.Errorf(`HTTP 400: "Value for 'target_lang' not supported." (https://api-free.deepl.com/v2/translate)`)
+	}
 	return &Translate{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}, nil
 }
