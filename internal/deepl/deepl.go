@@ -11,6 +11,10 @@ import (
 	"path"
 )
 
+type Clienter interface {
+	Translate(context.Context, string, string, string) (*Translate, error)
+}
+
 var ErrMissingAuthKey = errors.New("missing DeepL authKey")
 
 type Client struct {

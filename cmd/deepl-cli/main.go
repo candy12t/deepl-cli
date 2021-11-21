@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/candy12t/deepl-cli/internal/config"
+	"github.com/candy12t/deepl-cli/internal/deepl"
 	"github.com/candy12t/deepl-cli/internal/repl"
 )
 
@@ -23,5 +25,9 @@ func main() {
 	flag.Parse()
 	fmt.Printf("Translate text from %s to %s\n", sourceLang, targetLang)
 
-	repl.Repl(sourceLang, targetLang)
+	client, err := deepl.NewClient(config.BaseURL(), config.AuthKey())
+	if err != nil {
+		log.Fatal(err)
+	}
+	repl.Repl(client, sourceLang, targetLang, os.Stdin, os.Stdout)
 }

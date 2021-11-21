@@ -4,42 +4,35 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"os"
+	"io"
 
-	"github.com/candy12t/deepl-cli/internal/config"
 	"github.com/candy12t/deepl-cli/internal/deepl"
 	"github.com/candy12t/deepl-cli/internal/validation"
 )
 
 const PROMPT = ">> "
 
-func Repl(sourceLang, targetLang string) {
-	scanner := bufio.NewScanner(os.Stdin)
-
-	client, err := deepl.NewClient(config.BaseURL(), config.AuthKey())
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
-	}
+func Repl(client deepl.Clienter, sourceLang, targetLang string, in io.Reader, out io.Writer) {
+	scanner := bufio.NewScanner(in)
 
 	for {
 		fmt.Printf(PROMPT)
-		if scanned := scanner.Scan(); !scanned {
+		if !scanner.Scan() {
 			return
 		}
 
 		text := scanner.Text()
 		validedText, err := validation.ValidText(text)
 		if err != nil {
-			fmt.Fprint(os.Stderr, err)
+			io.WriteString(out, err.Error())
 		}
 
 		ctx := context.Background()
 		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			io.WriteString(out, err.Error())
 			return
 		}
-		fmt.Println(t.TranslateText())
+		io.WriteString(out, t.TranslateText()+"\n")
 	}
 }
