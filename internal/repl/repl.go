@@ -3,6 +3,7 @@ package repl
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/candy12t/deepl-cli/internal/deepl"
@@ -15,7 +16,7 @@ func Repl(client deepl.Clienter, sourceLang, targetLang string, in io.Reader, ou
 	scanner := bufio.NewScanner(in)
 
 	for {
-		io.WriteString(out, PROMPT)
+		fmt.Fprint(out, PROMPT)
 		if !scanner.Scan() {
 			return
 		}
@@ -23,16 +24,16 @@ func Repl(client deepl.Clienter, sourceLang, targetLang string, in io.Reader, ou
 		text := scanner.Text()
 		validedText, err := validation.ValidText(text)
 		if err != nil {
-			io.WriteString(out, err.Error()+"\n")
+			fmt.Fprintln(out, err)
 			continue
 		}
 
 		ctx := context.Background()
 		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
 		if err != nil {
-			io.WriteString(out, err.Error())
+			fmt.Fprintln(out, err)
 			return
 		}
-		io.WriteString(out, t.TranslateText()+"\n")
+		fmt.Fprintln(out, t.TranslateText())
 	}
 }

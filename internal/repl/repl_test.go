@@ -31,7 +31,7 @@ func TestRepl(t *testing.T) {
 			name:       "failed repl because not specified target language",
 			input:      bytes.NewBufferString("hello"),
 			targetLang: "",
-			want:       fmt.Sprintf(`%sHTTP 400: "Value for 'target_lang' not supported." (https://api-free.deepl.com/v2/translate)`, PROMPT),
+			want:       fmt.Sprintf("%sHTTP 400: \"Value for 'target_lang' not supported.\" (https://api-free.deepl.com/v2/translate)\n", PROMPT),
 		},
 	}
 
