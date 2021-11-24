@@ -9,14 +9,14 @@ const (
 	free       = "api-free"
 )
 
-func baseURL() string {
-	if isPro() {
+func (c *Config) BaseURL() string {
+	if c.isPro() {
 		return fmt.Sprintf("https://%s.%s/%s", pro, baseHost, apiVersion)
 	} else {
 		return fmt.Sprintf("https://%s.%s/%s", free, baseHost, apiVersion)
 	}
 }
 
-func isPro() bool {
-	return CachedConfig().Account.AccountPlan == "pro"
+func (c *Config) isPro() bool {
+	return c.Account.AccountPlan == "pro"
 }

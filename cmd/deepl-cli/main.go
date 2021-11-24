@@ -12,10 +12,11 @@ import (
 )
 
 func main() {
-	if err := config.ParseConfig(config.ConfigFile()); err != nil {
+	cfg, err := config.ParseConfig(config.ConfigFile())
+	if err != nil {
 		log.Fatal(err)
 	}
-	defaultSourceLang, defaultTargetLang := config.DefaultLangs()
+	defaultSourceLang, defaultTargetLang := cfg.DefaultLangs()
 
 	var sourceLang, targetLang string
 	flag.StringVar(&sourceLang, "source", defaultSourceLang, "Language of the source text.")
@@ -25,7 +26,7 @@ func main() {
 	flag.Parse()
 	fmt.Printf("Translate text from %s to %s\n", sourceLang, targetLang)
 
-	client, err := deepl.NewClient(config.BaseURL(), config.AuthKey())
+	client, err := deepl.NewClient(cfg.BaseURL(), cfg.AuthKey())
 	if err != nil {
 		log.Fatal(err)
 	}

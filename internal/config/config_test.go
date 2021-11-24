@@ -11,13 +11,14 @@ func TestParseConfig(t *testing.T) {
 	tests := []struct {
 		name            string
 		inputConfigFile string
-		wantConfig      Config
+		wantConfig      *Config
+		wantBaseURL     string
 		wantErr         error
 	}{
 		{
 			name:            "parse config yml file, accoutn plan is `free`",
 			inputConfigFile: "free.yaml",
-			wantConfig: Config{
+			wantConfig: &Config{
 				Account: Account{
 					AuthKey:     "test-auth-key",
 					AccountPlan: "free",
@@ -26,14 +27,14 @@ func TestParseConfig(t *testing.T) {
 					SourceLang: "EN",
 					TargetLang: "JA",
 				},
-				BaseURL: "https://api-free.deepl.com/v2",
 			},
-			wantErr: nil,
+			wantBaseURL: "https://api-free.deepl.com/v2",
+			wantErr:     nil,
 		},
 		{
 			name:            "parse config yml file, accoutn plan is `pro`",
 			inputConfigFile: "pro.yaml",
-			wantConfig: Config{
+			wantConfig: &Config{
 				Account: Account{
 					AuthKey:     "test-auth-key",
 					AccountPlan: "pro",
@@ -42,46 +43,72 @@ func TestParseConfig(t *testing.T) {
 					SourceLang: "EN",
 					TargetLang: "JA",
 				},
-				BaseURL: "https://api.deepl.com/v2",
 			},
-			wantErr: nil,
+			wantBaseURL: "https://api.deepl.com/v2",
+			wantErr:     nil,
 		},
 		{
 			name:            "can not read config file",
 			inputConfigFile: "not_read.yaml",
-			wantConfig:      Config{},
+			wantConfig:      nil,
 			wantErr:         ErrNotReadFile,
 		},
 		{
 			name:            "can not unmarshal config file",
 			inputConfigFile: "not_unmarshal.yaml",
-			wantConfig:      Config{},
+			wantConfig:      nil,
 			wantErr:         ErrNotUnmarshal,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer teardownConfig(t)
-
-			wantConfig := tt.wantConfig
 			configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", tt.inputConfigFile)
+			gotConfig, gotErr := ParseConfig(configPath)
 
-			test.AssertError(t, ParseConfig(configPath), tt.wantErr)
-			assertConfig(t, CachedConfig(), wantConfig)
+			test.AssertError(t, gotErr, tt.wantErr)
+			assertConfig(t, gotConfig, tt.wantConfig)
 		})
 	}
 }
 
-func assertConfig(t *testing.T, got, want Config) {
+func assertConfig(t *testing.T, got, want *Config) {
 	t.Helper()
+	if got == nil {
+		if want == nil {
+			return
+		}
+		t.Fatal("expexted got Config")
+	}
+
+	assertAuthKey(t, got.AuthKey(), want.AuthKey())
+	assertDefaltLangs(t, got, want)
+	assertBaseURL(t, got.BaseURL(), want.BaseURL())
+
+}
+
+func assertAuthKey(t *testing.T, got, want string) {
 	if got != want {
-		t.Fatalf("got %v, want %v", got, want)
+		t.Errorf("got AuthKey is %q, want %q", got, want)
 	}
 }
 
-func teardownConfig(t *testing.T) {
-	t.Cleanup(func() {
-		config = Config{}
-	})
+func assertDefaltLangs(t *testing.T, got, want *Config) {
+	gotSourceLang, gotTargetLang := got.DefaultLangs()
+	wantSourceLang, wantTargetLang := want.DefaultLangs()
+
+	if gotSourceLang != wantSourceLang {
+		t.Errorf("got SourceLang is %q, want %q", gotSourceLang, wantSourceLang)
+	}
+
+	if gotTargetLang != wantTargetLang {
+		t.Errorf("got TargetLang is %q, want %q", gotTargetLang, wantTargetLang)
+	}
+}
+
+func assertBaseURL(t *testing.T, got, want string) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got BaseURL is %q, want %q", got, want)
+	}
 }

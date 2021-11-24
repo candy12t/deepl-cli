@@ -11,7 +11,6 @@ import (
 type Config struct {
 	Account     Account     `yaml:"account"`
 	DefaultLang DefaultLang `yaml:"default_lang"`
-	BaseURL     string
 }
 
 type Account struct {
@@ -24,33 +23,28 @@ type DefaultLang struct {
 	TargetLang string `yaml:"target_lang"`
 }
 
-var config Config
-
-func CachedConfig() Config {
-	return config
-}
-
 func ConfigFile() string {
 	d, _ := os.UserHomeDir()
 	return filepath.Join(d, ".config", "deepl-cli", "config.yaml")
 }
 
-func ParseConfig(filepath string) error {
+func ParseConfig(filepath string) (*Config, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return ErrNotReadFile
+		return nil, ErrNotReadFile
 	}
 
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return ErrNotUnmarshal
+	config := new(Config)
+	if err := yaml.Unmarshal(data, config); err != nil {
+		return nil, ErrNotUnmarshal
 	}
-	config.BaseURL = baseURL()
 
-	return nil
+	return config, nil
 }
 
-func DefaultLangs() (string, string) {
-	return config.DefaultLang.SourceLang, config.DefaultLang.TargetLang
+func (c *Config) DefaultLangs() (string, string) {
+	return c.DefaultLang.SourceLang, c.DefaultLang.TargetLang
 }
-func AuthKey() string { return CachedConfig().Account.AuthKey }
-func BaseURL() string { return CachedConfig().BaseURL }
+func (c *Config) AuthKey() string {
+	return c.Account.AuthKey
+}
