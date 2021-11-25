@@ -42,9 +42,32 @@ func ParseConfig(filepath string) (*Config, error) {
 	return config, nil
 }
 
+func LoadConfig() *Config {
+	cfg, err := ParseConfig(ConfigFile())
+	if err != nil {
+		return &Config{
+			DefaultLang: setDefaultLang(),
+		}
+	}
+
+	if sourceLang, targetLang := cfg.DefaultLangs(); sourceLang == "" || targetLang == "" {
+		cfg.DefaultLang = setDefaultLang()
+	}
+
+	return cfg
+}
+
 func (c *Config) DefaultLangs() (string, string) {
 	return c.DefaultLang.SourceLang, c.DefaultLang.TargetLang
 }
+
 func (c *Config) AuthKey() string {
 	return c.Account.AuthKey
+}
+
+func setDefaultLang() DefaultLang {
+	return DefaultLang{
+		SourceLang: "EN",
+		TargetLang: "JA",
+	}
 }
