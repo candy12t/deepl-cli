@@ -11,7 +11,7 @@ import (
 	"path"
 )
 
-type Clienter interface {
+type APIClient interface {
 	Translate(context.Context, string, string, string) (*Translate, error)
 }
 
