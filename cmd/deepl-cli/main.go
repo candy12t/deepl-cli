@@ -52,7 +52,11 @@ func (c *CLI) run(args []string) exitCode {
 		EnableBashCompletion: true,
 		HideHelp:             true,
 		Flags: []cli.Flag{
-			&cli.BoolFlag{Name: "help", Aliases: []string{"h"}},
+			&cli.BoolFlag{
+				Name:    "help",
+				Aliases: []string{"h"},
+				Usage:   "Show help for command",
+			},
 		},
 		CommandNotFound: func(ctx *cli.Context, command string) {
 			fmt.Fprintf(ctx.App.Writer, "unknown command %q for %q\n", command, "deepl-cli")
