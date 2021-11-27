@@ -1,15 +1,8 @@
 package test
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 )
-
-func ProjectDirPath() string {
-	currentDirPath, _ := os.Getwd()
-	return filepath.Join(currentDirPath, "..", "..")
-}
 
 func AssertError(t *testing.T, got, want error) {
 	t.Helper()

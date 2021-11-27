@@ -63,7 +63,7 @@ func TestParseConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			configPath := filepath.Join(test.ProjectDirPath(), "test", "testdata", "config", tt.inputConfigFile)
+			configPath := filepath.Join("testdata", tt.inputConfigFile)
 			gotConfig, gotErr := ParseConfig(configPath)
 
 			test.AssertError(t, gotErr, tt.wantErr)
