@@ -1,0 +1,6 @@
+account:
+  auth_key: "test-auth-key"
+  account_plan: "pro"
+default_lang:
+  source_lang: "EN"
+  target_lang: "JA"

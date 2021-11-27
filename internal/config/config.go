@@ -9,48 +9,65 @@ import (
 )
 
 type Config struct {
-	Account struct {
-		AuthKey     string `yaml:"auth_key"`
-		AccountPlan string `yaml:"account_plan"`
-	} `yaml:"account"`
-	DefaultTranslateLang struct {
-		SourceLang string `yaml:"source_lang"`
-		TargetLang string `yaml:"target_lang"`
-	} `yaml:"default_translate_lang"`
+	Account     Account     `yaml:"account"`
+	DefaultLang DefaultLang `yaml:"default_lang"`
 }
 
-var config Config
+type Account struct {
+	AuthKey     string `yaml:"auth_key"`
+	AccountPlan string `yaml:"account_plan"`
+}
 
-func ConfigDir() string {
-	d, _ := os.UserHomeDir()
-	return filepath.Join(d, ".config", "deepl-cli")
+type DefaultLang struct {
+	SourceLang string `yaml:"source_lang"`
+	TargetLang string `yaml:"target_lang"`
 }
 
 func ConfigFile() string {
-	return filepath.Join(ConfigDir(), "config.yaml")
+	d, _ := os.UserHomeDir()
+	return filepath.Join(d, ".config", "deepl-cli", "config.yaml")
 }
 
-func ParseConfig() error {
-	data, err := ioutil.ReadFile(ConfigFile())
+func ParseConfig(filepath string) (*Config, error) {
+	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return err
+		return nil, ErrNotReadFile
 	}
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return err
+
+	config := new(Config)
+	if err := yaml.Unmarshal(data, config); err != nil {
+		return nil, ErrNotUnmarshal
 	}
-	return nil
+
+	return config, nil
 }
 
-func DefaultLang() (string, string) {
-	return setDefaultLang(config.DefaultTranslateLang.SourceLang, "EN"), setDefaultLang(config.DefaultTranslateLang.TargetLang, "JA")
+func LoadConfig() *Config {
+	cfg, err := ParseConfig(ConfigFile())
+	if err != nil {
+		return &Config{
+			DefaultLang: setDefaultLang(),
+		}
+	}
+
+	if sourceLang, targetLang := cfg.DefaultLangs(); sourceLang == "" || targetLang == "" {
+		cfg.DefaultLang = setDefaultLang()
+	}
+
+	return cfg
 }
 
-func AccountPlan() string { return config.Account.AccountPlan }
-func AuthKey() string     { return config.Account.AuthKey }
+func (c *Config) DefaultLangs() (string, string) {
+	return c.DefaultLang.SourceLang, c.DefaultLang.TargetLang
+}
 
-func setDefaultLang(oldStr, newStr string) string {
-	if oldStr == "" {
-		return newStr
+func (c *Config) AuthKey() string {
+	return c.Account.AuthKey
+}
+
+func setDefaultLang() DefaultLang {
+	return DefaultLang{
+		SourceLang: "EN",
+		TargetLang: "JA",
 	}
-	return oldStr
 }

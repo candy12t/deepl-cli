@@ -2,41 +2,38 @@ package repl
 
 import (
 	"bufio"
+	"context"
 	"fmt"
-	"os"
-	"strings"
+	"io"
 
-	"github.com/candy12t/deepl-cli/api"
+	"github.com/candy12t/deepl-cli/internal/deepl"
+	"github.com/candy12t/deepl-cli/internal/validation"
 )
 
 const PROMPT = ">> "
 
-func Repl(sourceLang, targetLang string) {
-	scanner := bufio.NewScanner(os.Stdin)
+func Repl(client deepl.APIClient, sourceLang, targetLang string, in io.Reader, out io.Writer) {
+	scanner := bufio.NewScanner(in)
+
 	for {
-		fmt.Printf(PROMPT)
-		if scanned := scanner.Scan(); !scanned {
+		fmt.Fprint(out, PROMPT)
+		if !scanner.Scan() {
 			return
 		}
 
 		text := scanner.Text()
-		if validedText, err := validText(text); err != nil {
-			fmt.Println(err)
-		} else {
-			tr, err := api.Translate(validedText, sourceLang, targetLang)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Println(tr.TranslatedText())
+		validedText, err := validation.ValidText(text)
+		if err != nil {
+			fmt.Fprintln(out, err)
+			continue
 		}
-	}
-}
 
-func validText(text string) (string, error) {
-	validedText := strings.TrimSpace(text)
-	if len(validedText) == 0 {
-		return "", fmt.Errorf("Error: text length is 0")
+		ctx := context.Background()
+		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
+		if err != nil {
+			fmt.Fprintln(out, err)
+			return
+		}
+		fmt.Fprintln(out, t.TranslateText())
 	}
-	return validedText, nil
 }
