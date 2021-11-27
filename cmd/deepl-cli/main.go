@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 
 	"github.com/candy12t/deepl-cli/internal/config"
 	"github.com/candy12t/deepl-cli/internal/deepl"
@@ -11,7 +12,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var version = "DEV"
+var Version = "DEV"
 
 type CLI struct {
 	outStream, errStream io.Writer
@@ -32,6 +33,14 @@ func main() {
 	os.Exit(int(code))
 }
 
+func init() {
+	if Version == "DEV" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
+			Version = info.Main.Version
+		}
+	}
+}
+
 func (c *CLI) run(args []string) exitCode {
 
 	defaultSourceLang, defaultTargetLang := c.config.DefaultLangs()
@@ -46,7 +55,7 @@ func (c *CLI) run(args []string) exitCode {
 	app := &cli.App{
 		Name:                 "deepl-cli",
 		Usage:                "unofficial DeepL command line tool",
-		Version:              version,
+		Version:              Version,
 		Writer:               c.outStream,
 		ErrWriter:            c.errStream,
 		EnableBashCompletion: true,

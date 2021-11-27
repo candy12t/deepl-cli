@@ -20,14 +20,14 @@ func TestRun(t *testing.T) {
 		{
 			name:         "--version",
 			args:         strings.Split("deepl-cli --version", " "),
-			wantOut:      fmt.Sprintf("deepl-cli version %s\n", version),
+			wantOut:      fmt.Sprintf("deepl-cli version %s\n", Version),
 			wantErr:      "",
 			wantExitCode: exitOK,
 		},
 		{
 			name:         "-v",
 			args:         strings.Split("deepl-cli -v", " "),
-			wantOut:      fmt.Sprintf("deepl-cli version %s\n", version),
+			wantOut:      fmt.Sprintf("deepl-cli version %s\n", Version),
 			wantErr:      "",
 			wantExitCode: exitOK,
 		},
