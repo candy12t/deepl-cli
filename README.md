@@ -12,8 +12,8 @@ go install github.com/candy12t/deepl-cli/cmd/deepl-cli@latest
 create config file
 
 ```shell
-mkdir ~/.config/deepl-cli
-touch config.yaml
+mkdir -p ~/.config/deepl-cli
+touch ~/.config/deepl-cli/config.yaml
 ```
 
 sample
