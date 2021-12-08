@@ -57,6 +57,23 @@ func LoadConfig() *Config {
 	return cfg
 }
 
+func WriteConfigFile(filename string, data []byte) error {
+	err := os.MkdirAll(filepath.Dir(filename), 0644)
+	if err != nil {
+		return err
+	}
+
+	cfg, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer cfg.Close()
+
+	_, err = cfg.Write(data)
+
+	return err
+}
+
 func (c *Config) DefaultLangs() (string, string) {
 	return c.DefaultLang.SourceLang, c.DefaultLang.TargetLang
 }

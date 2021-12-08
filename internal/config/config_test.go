@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/candy12t/deepl-cli/test"
+	"gopkg.in/yaml.v2"
 )
 
 func TestParseConfig(t *testing.T) {
@@ -68,6 +69,43 @@ func TestParseConfig(t *testing.T) {
 
 			test.AssertError(t, gotErr, tt.wantErr)
 			assertConfig(t, gotConfig, tt.wantConfig)
+		})
+	}
+}
+
+func WriteConfigTest(t *testing.T) {
+	tests := []struct {
+		name        string
+		inputConfig Config
+		args        struct {
+			filename string
+			data     func(Config) []byte
+		}
+		wantErr error
+	}{
+		{
+			name: "write config file",
+			inputConfig: Config{
+				Account:     Account{AuthKey: "test-auth-key", AccountPlan: "free"},
+				DefaultLang: DefaultLang{SourceLang: "EN", TargetLang: "JA"},
+			},
+			args: struct {
+				filename string
+				data     func(Config) []byte
+			}{
+				filename: filepath.Join(t.TempDir(), "config.yaml"),
+				data: func(config Config) []byte {
+					data, _ := yaml.Marshal(config)
+					return data
+				},
+			},
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := WriteConfigFile(tt.args.filename, tt.args.data(tt.inputConfig))
+			test.AssertError(t, err, tt.wantErr)
 		})
 	}
 }
