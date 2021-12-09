@@ -6,9 +6,9 @@ import (
 	"os"
 	"runtime/debug"
 
+	"github.com/candy12t/deepl-cli/internal/cmd/repl"
 	"github.com/candy12t/deepl-cli/internal/config"
 	"github.com/candy12t/deepl-cli/internal/deepl"
-	"github.com/candy12t/deepl-cli/internal/repl"
 	"github.com/urfave/cli/v2"
 )
 
