@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/candy12t/deepl-cli/internal/build"
 	"github.com/candy12t/deepl-cli/internal/config"
 )
 
@@ -20,14 +21,14 @@ func TestRun(t *testing.T) {
 		{
 			name:         "--version",
 			args:         strings.Split("deepl-cli --version", " "),
-			wantOut:      fmt.Sprintf("deepl-cli version %s\n", Version),
+			wantOut:      fmt.Sprintf("deepl-cli version %s\n", build.Version),
 			wantErr:      "",
 			wantExitCode: exitOK,
 		},
 		{
 			name:         "-v",
 			args:         strings.Split("deepl-cli -v", " "),
-			wantOut:      fmt.Sprintf("deepl-cli version %s\n", Version),
+			wantOut:      fmt.Sprintf("deepl-cli version %s\n", build.Version),
 			wantErr:      "",
 			wantExitCode: exitOK,
 		},
@@ -66,9 +67,9 @@ func TestRun(t *testing.T) {
 					TargetLang: "JA",
 				},
 			}
-			outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-			cli := &CLI{outStream: outStream, errStream: errStream, config: cfg}
-			code := cli.run(tt.args)
+			inStream, outStream, errStream := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
+			cli := NewCLI(inStream, outStream, errStream, cfg)
+			code := cli.Run(tt.args)
 
 			if outStream.String() != tt.wantOut {
 				t.Errorf("got %q, want %q", outStream.String(), tt.wantOut)
