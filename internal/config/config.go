@@ -63,7 +63,7 @@ func WriteConfigFile(filename string, data []byte) error {
 		return err
 	}
 
-	cfg, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
+	cfg, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
