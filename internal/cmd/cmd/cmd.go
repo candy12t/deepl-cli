@@ -6,6 +6,7 @@ import (
 
 	"github.com/candy12t/deepl-cli/internal/build"
 	"github.com/candy12t/deepl-cli/internal/cmd/repl"
+	"github.com/candy12t/deepl-cli/internal/cmd/setup"
 	"github.com/candy12t/deepl-cli/internal/config"
 	"github.com/candy12t/deepl-cli/internal/deepl"
 	"github.com/urfave/cli/v2"
@@ -66,6 +67,17 @@ func (c *CLI) Run(args []string) exitCode {
 			fmt.Fprintf(ctx.App.Writer, "unknown command %q for %q\n", command, "deepl-cli")
 		},
 		Commands: []*cli.Command{
+			{
+				Name:  "setup",
+				Usage: "setup",
+				Action: func(ctx *cli.Context) error {
+					err := setup.Setup(ctx.App.Reader, ctx.App.Writer)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
 			{
 				Name:  "repl",
 				Usage: "repl",
