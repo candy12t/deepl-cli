@@ -57,6 +57,19 @@ func LoadConfig() *Config {
 	return cfg
 }
 
+func (c *Config) Write() error {
+	cfgBytes, err := yaml.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	if err := WriteConfigFile(ConfigFile(), cfgBytes); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func WriteConfigFile(filename string, data []byte) error {
 	err := os.MkdirAll(filepath.Dir(filename), 0644)
 	if err != nil {
