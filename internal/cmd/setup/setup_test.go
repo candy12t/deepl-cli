@@ -28,6 +28,20 @@ func TestSetup(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "setup validate",
+			input: []string{"test-auth-key", "hoge", "free", "EN", "JA"},
+			want: &config.Config{
+				Account: config.Account{
+					AuthKey:     "test-auth-key",
+					AccountPlan: "free",
+				},
+				DefaultLang: config.DefaultLang{
+					SourceLang: "EN",
+					TargetLang: "JA",
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

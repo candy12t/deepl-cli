@@ -7,6 +7,14 @@ import (
 	"github.com/candy12t/deepl-cli/internal/config"
 )
 
+const (
+	authKeyQuestion        = "your DeepL auth key"
+	accountPlanQuestion    = "your DeepL account plan"
+	sourceLanguageQuestion = "set default `source` language"
+	targetLanguageQuestion = "set default `target` language"
+)
+
+var accountPlanList = []string{"free", "pro"}
 var languageList = []string{"BG", "CS", "DA", "DE", "EL", "EN", "ES", "ET", "FI", "FR", "HU", "IT", "JA", "LT", "LV", "NL", "PL", "PT", "RO", "RU", "SK", "SL", "SV", "ZH"}
 
 func Setup(inStream io.Reader, outStream io.Writer) error {
@@ -19,27 +27,16 @@ func Setup(inStream io.Reader, outStream io.Writer) error {
 	return nil
 }
 
-// TODO: validation
 func PromptSetup(inStream io.Reader, outStream io.Writer) *config.Config {
-	var authKey string
-	fmt.Fprintf(outStream, "Paste your DeepL auth key >> ")
-	fmt.Fscanf(inStream, "%s\n", &authKey)
 
-	var accountPlan string
-	fmt.Fprintf(outStream, "your DeepL account plan \"free\" or \"pro\" >> ")
-	fmt.Fscanf(inStream, "%s\n", &accountPlan)
-
-	var sourceLanguage string
-	fmt.Fprintf(outStream, "set default source language >> ")
-	fmt.Fscanf(inStream, "%s\n", &sourceLanguage)
-
-	var targetLanguage string
-	fmt.Fprintf(outStream, "set default target language >> ")
-	fmt.Fscanf(inStream, "%s\n", &targetLanguage)
+	authKey := promptForLine(inStream, outStream, authKeyQuestion)
+	accountPlan := promptForSelect(inStream, outStream, accountPlanQuestion, accountPlanList)
+	sourceLanguage := promptForSelect(inStream, outStream, sourceLanguageQuestion, languageList)
+	targetLanguage := promptForSelect(inStream, outStream, targetLanguageQuestion, languageList)
 
 	return &config.Config{
 		Account: config.Account{
-			AuthKey:     string(authKey),
+			AuthKey:     authKey,
 			AccountPlan: accountPlan,
 		},
 		DefaultLang: config.DefaultLang{
@@ -47,4 +44,49 @@ func PromptSetup(inStream io.Reader, outStream io.Writer) *config.Config {
 			TargetLang: targetLanguage,
 		},
 	}
+}
+
+func promptForLine(inStream io.Reader, outStream io.Writer, msg string) string {
+	var answer string
+
+	fmt.Fprintln(outStream, msg)
+	fmt.Fprintf(outStream, ">> ")
+	fmt.Fscanf(inStream, "%s\n", &answer)
+
+	return answer
+}
+
+func promptForSelect(inStream io.Reader, outStream io.Writer, msg string, selectList []string) string {
+	var answer string
+
+	fmt.Fprintln(outStream, msg)
+	fmt.Fprintln(outStream, joinSelectList(selectList))
+	fmt.Fprintf(outStream, ">> ")
+	fmt.Fscanf(inStream, "%s\n", &answer)
+
+	if ok := isValueInStringSlice(answer, selectList); !ok {
+		fmt.Fprintln(outStream, "##############################################")
+		fmt.Fprintln(outStream, "### no correct input value!!! try again!!! ###")
+		fmt.Fprintln(outStream, "##############################################")
+		return promptForSelect(inStream, outStream, msg, selectList)
+	}
+
+	return answer
+}
+
+func joinSelectList(selectList []string) string {
+	var str string
+	for _, v := range selectList {
+		str += fmt.Sprintf("%q ", v)
+	}
+	return str
+}
+
+func isValueInStringSlice(value string, strList []string) bool {
+	for _, v := range strList {
+		if v == value {
+			return true
+		}
+	}
+	return false
 }
