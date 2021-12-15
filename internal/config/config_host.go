@@ -12,9 +12,8 @@ const (
 func (c *Config) BaseURL() string {
 	if c.isPro() {
 		return fmt.Sprintf("https://%s.%s/%s", pro, baseHost, apiVersion)
-	} else {
-		return fmt.Sprintf("https://%s.%s/%s", free, baseHost, apiVersion)
 	}
+	return fmt.Sprintf("https://%s.%s/%s", free, baseHost, apiVersion)
 }
 
 func (c *Config) isPro() bool {

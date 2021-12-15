@@ -35,12 +35,12 @@ func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang str
 	}
 	defer resp.Body.Close()
 
-	transalte := new(Translate)
-	if err := decodeBody(resp, transalte); err != nil {
+	translate := new(Translate)
+	if err := decodeBody(resp, translate); err != nil {
 		return nil, err
 	}
 
-	return transalte, nil
+	return translate, nil
 }
 
 func (t *Translate) TranslateText() string {
