@@ -5,7 +5,7 @@ all: clean build
 
 .PHONY: build
 build:
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(OBJ) -v ./cmd/deepl-cli
+	go build -ldflags "-X github.com/candy12t/deepl-cli/internal/build.Version=$(VERSION)" -o $(OBJ) -v ./cmd/deepl-cli
 
 .PHONY: clean
 clean:

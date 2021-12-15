@@ -14,7 +14,7 @@ builds:
   - main: ./cmd/deepl-cli
     binary: bin/deepl-cli
     ldflags:
-      -s -w -X main.Version={{.Version}}
+      -s -w -X github.com/candy12t/deepl-cli/internal/build.Version={{.Version}}
     goos:
       - darwin
       - linux

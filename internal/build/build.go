@@ -1,6 +1,8 @@
 package build
 
-import "runtime/debug"
+import (
+	"runtime/debug"
+)
 
 var Version = "DEV"
 
