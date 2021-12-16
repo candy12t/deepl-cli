@@ -69,7 +69,7 @@ func (c *CLI) Run(args []string) exitCode {
 		Commands: []*cli.Command{
 			{
 				Name:  "setup",
-				Usage: "setup",
+				Usage: "Setup for using this cli",
 				Action: func(ctx *cli.Context) error {
 					err := setup.Setup(ctx.App.Reader, ctx.App.Writer)
 					if err != nil {
@@ -80,7 +80,7 @@ func (c *CLI) Run(args []string) exitCode {
 			},
 			{
 				Name:  "repl",
-				Usage: "repl",
+				Usage: "Translate with REPL",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:        "source",

@@ -1,33 +1,25 @@
 # deepl-cli
 
+[![test](https://github.com/candy12t/deepl-cli/actions/workflows/go.yml/badge.svg)](https://github.com/candy12t/deepl-cli/actions/workflows/go.yml)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/candy12t/deepl-cli)
+![GitHub](https://img.shields.io/github/license/candy12t/deepl-cli)
+[![Go Report Card](https://goreportcard.com/badge/github.com/candy12t/deepl-cli)](https://goreportcard.com/report/github.com/candy12t/deepl-cli)
+
 ## Installation
 
 go install:
 
 ```shell
-go install github.com/candy12t/deepl-cli/cmd/deepl-cli@latest
+go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.2.0
 ```
 
 ## setup
-create config file
 
 ```shell
-mkdir -p ~/.config/deepl-cli
-touch ~/.config/deepl-cli/config.yaml
+deepl-cli setup
 ```
 
-sample
-
-```yaml
-account:
-  auth_key: "xxxxxxxx"
-  account_plan: "free"
-default_lang:
-  source_lang: "EN"
-  target_lang: "JA"
-```
-
-See [here](https://www.deepl.com/ja/docs-api/translating-text/) for `source_lang` and `target_lang` values.
+See [here](https://www.deepl.com/ja/docs-api/translating-text/) for `source` language and `target` language values.
 
 ## Usage
 
@@ -36,7 +28,8 @@ USAGE:
 	deepl-cli [global options] command [command options] [arguments...]
 
 COMMANDS:
-	repl  repl
+  setup  Setup for using this cli
+  repl   Translate with REPL
 
 GLOBAL OPTIONS:
 	--help, -h     Show help for command (default: false)
