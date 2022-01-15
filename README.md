@@ -1,6 +1,6 @@
 # deepl-cli
 
-[![test](https://github.com/candy12t/deepl-cli/actions/workflows/go.yml/badge.svg)](https://github.com/candy12t/deepl-cli/actions/workflows/go.yml)
+[![Test](https://github.com/candy12t/deepl-cli/actions/workflows/test.yml/badge.svg)](https://github.com/candy12t/deepl-cli/actions/workflows/test.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/candy12t/deepl-cli)
 ![GitHub](https://img.shields.io/github/license/candy12t/deepl-cli)
 [![Go Report Card](https://goreportcard.com/badge/github.com/candy12t/deepl-cli)](https://goreportcard.com/report/github.com/candy12t/deepl-cli)
@@ -10,7 +10,7 @@
 go install:
 
 ```shell
-go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.2.0
+go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.3.0
 ```
 
 ## setup
