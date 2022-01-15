@@ -58,10 +58,7 @@ func TestRun(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := &config.Config{
-				Account: config.Account{
-					AuthKey:     "test-auth-key",
-					AccountPlan: "free",
-				},
+				AuthKey: "test-auth-key",
 				DefaultLang: config.DefaultLang{
 					SourceLang: "EN",
 					TargetLang: "JA",

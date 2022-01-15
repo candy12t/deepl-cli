@@ -13,40 +13,19 @@ func TestParseConfig(t *testing.T) {
 		name            string
 		inputConfigFile string
 		wantConfig      *Config
-		wantBaseURL     string
 		wantErr         error
 	}{
 		{
-			name:            "parse config yml file, accoutn plan is `free`",
-			inputConfigFile: "free.yaml",
+			name:            "parse config yml file",
+			inputConfigFile: "config.yaml",
 			wantConfig: &Config{
-				Account: Account{
-					AuthKey:     "test-auth-key",
-					AccountPlan: "free",
-				},
+				AuthKey: "test-auth-key",
 				DefaultLang: DefaultLang{
 					SourceLang: "EN",
 					TargetLang: "JA",
 				},
 			},
-			wantBaseURL: "https://api-free.deepl.com/v2",
-			wantErr:     nil,
-		},
-		{
-			name:            "parse config yml file, accoutn plan is `pro`",
-			inputConfigFile: "pro.yaml",
-			wantConfig: &Config{
-				Account: Account{
-					AuthKey:     "test-auth-key",
-					AccountPlan: "pro",
-				},
-				DefaultLang: DefaultLang{
-					SourceLang: "EN",
-					TargetLang: "JA",
-				},
-			},
-			wantBaseURL: "https://api.deepl.com/v2",
-			wantErr:     nil,
+			wantErr: nil,
 		},
 		{
 			name:            "can not read config file",
@@ -86,7 +65,7 @@ func WriteConfigTest(t *testing.T) {
 		{
 			name: "write config file",
 			inputConfig: Config{
-				Account:     Account{AuthKey: "test-auth-key", AccountPlan: "free"},
+				AuthKey:     "test-auth-key",
 				DefaultLang: DefaultLang{SourceLang: "EN", TargetLang: "JA"},
 			},
 			args: struct {
@@ -119,9 +98,8 @@ func assertConfig(t *testing.T, got, want *Config) {
 		t.Fatal("expexted got Config")
 	}
 
-	assertAuthKey(t, got.AuthKey(), want.AuthKey())
+	assertAuthKey(t, got.GetAuthKey(), want.GetAuthKey())
 	assertDefaltLangs(t, got, want)
-	assertBaseURL(t, got.BaseURL(), want.BaseURL())
 
 }
 
@@ -141,12 +119,5 @@ func assertDefaltLangs(t *testing.T, got, want *Config) {
 
 	if gotTargetLang != wantTargetLang {
 		t.Errorf("got TargetLang is %q, want %q", gotTargetLang, wantTargetLang)
-	}
-}
-
-func assertBaseURL(t *testing.T, got, want string) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got BaseURL is %q, want %q", got, want)
 	}
 }

@@ -18,10 +18,7 @@ func TestSetup(t *testing.T) {
 			name:  "setup",
 			input: []string{"test-auth-key", "free", "EN", "JA"},
 			want: &config.Config{
-				Account: config.Account{
-					AuthKey:     "test-auth-key",
-					AccountPlan: "free",
-				},
+				AuthKey: "test-auth-key",
 				DefaultLang: config.DefaultLang{
 					SourceLang: "EN",
 					TargetLang: "JA",
@@ -32,10 +29,7 @@ func TestSetup(t *testing.T) {
 			name:  "setup validate",
 			input: []string{"test-auth-key", "hoge", "free", "EN", "JA"},
 			want: &config.Config{
-				Account: config.Account{
-					AuthKey:     "test-auth-key",
-					AccountPlan: "free",
-				},
+				AuthKey: "test-auth-key",
 				DefaultLang: config.DefaultLang{
 					SourceLang: "EN",
 					TargetLang: "JA",

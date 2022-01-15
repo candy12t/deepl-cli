@@ -102,7 +102,7 @@ func (c *CLI) Run(args []string) exitCode {
 						return err
 					}
 					fmt.Fprintf(ctx.App.Writer, "Translate text from %s to %s\n", sourceLang, targetLang)
-					client, err := deepl.NewClient(c.cfg.BaseURL(), c.cfg.AuthKey())
+					client, err := deepl.NewClient(c.cfg.GetAuthKey())
 					if err != nil {
 						return err
 					}
@@ -122,7 +122,7 @@ func (c *CLI) Run(args []string) exitCode {
 }
 
 func (c *CLI) checkAuthKey() error {
-	if len(c.cfg.AuthKey()) == 0 {
+	if len(c.cfg.GetAuthKey()) == 0 {
 		return fmt.Errorf("To setup, please run `deepl-cli setup`.")
 	}
 	return nil

@@ -1,0 +1,4 @@
+auth_key: "test-auth-key"
+default_lang:
+  source_lang: "EN"
+  target_lang: "JA"

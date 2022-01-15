@@ -9,12 +9,10 @@ import (
 
 const (
 	authKeyQuestion        = "your DeepL auth key"
-	accountPlanQuestion    = "your DeepL account plan"
 	sourceLanguageQuestion = "set default `source` language"
 	targetLanguageQuestion = "set default `target` language"
 )
 
-var accountPlanList = []string{"free", "pro"}
 var languageList = []string{"BG", "CS", "DA", "DE", "EL", "EN", "ES", "ET", "FI", "FR", "HU", "IT", "JA", "LT", "LV", "NL", "PL", "PT", "RO", "RU", "SK", "SL", "SV", "ZH"}
 
 func Setup(inStream io.Reader, outStream io.Writer) error {
@@ -30,15 +28,11 @@ func Setup(inStream io.Reader, outStream io.Writer) error {
 func PromptSetup(inStream io.Reader, outStream io.Writer) *config.Config {
 
 	authKey := promptForLine(inStream, outStream, authKeyQuestion)
-	accountPlan := promptForSelect(inStream, outStream, accountPlanQuestion, accountPlanList)
 	sourceLanguage := promptForSelect(inStream, outStream, sourceLanguageQuestion, languageList)
 	targetLanguage := promptForSelect(inStream, outStream, targetLanguageQuestion, languageList)
 
 	return &config.Config{
-		Account: config.Account{
-			AuthKey:     authKey,
-			AccountPlan: accountPlan,
-		},
+		AuthKey: authKey,
 		DefaultLang: config.DefaultLang{
 			SourceLang: sourceLanguage,
 			TargetLang: targetLanguage,

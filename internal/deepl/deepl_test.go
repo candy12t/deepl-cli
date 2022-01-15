@@ -15,7 +15,7 @@ const testAuthKey = "test-auth-key"
 
 func TestNewClient(t *testing.T) {
 	t.Run("success new deepl client", func(t *testing.T) {
-		c, err := NewClient(defaultBaseURL, testAuthKey)
+		c, err := NewClient(testAuthKey)
 		test.AssertError(t, err, nil)
 
 		if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
@@ -24,13 +24,8 @@ func TestNewClient(t *testing.T) {
 	})
 
 	t.Run("failed new deepl client because missing deepl authkey", func(t *testing.T) {
-		_, err := NewClient(defaultBaseURL, "")
+		_, err := NewClient("")
 		test.AssertError(t, err, ErrMissingAuthKey)
-	})
-
-	t.Run("failed new deepl client because don't parse url", func(t *testing.T) {
-		_, err := NewClient("%", testAuthKey)
-		testURLParseErr(t, err)
 	})
 }
 
@@ -38,7 +33,7 @@ func setup() (*Client, *http.ServeMux, func()) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
-	client, _ := NewClient(defaultBaseURL, testAuthKey)
+	client, _ := NewClient(testAuthKey)
 	url, _ := url.ParseRequestURI(server.URL)
 	client.BaseURL = url
 

@@ -9,13 +9,8 @@ import (
 )
 
 type Config struct {
-	Account     Account     `yaml:"account"`
+	AuthKey     string      `yaml:"auth_key"`
 	DefaultLang DefaultLang `yaml:"default_lang"`
-}
-
-type Account struct {
-	AuthKey     string `yaml:"auth_key"`
-	AccountPlan string `yaml:"account_plan"`
 }
 
 type DefaultLang struct {
@@ -91,8 +86,8 @@ func (c *Config) DefaultLangs() (string, string) {
 	return c.DefaultLang.SourceLang, c.DefaultLang.TargetLang
 }
 
-func (c *Config) AuthKey() string {
-	return c.Account.AuthKey
+func (c *Config) GetAuthKey() string {
+	return c.AuthKey
 }
 
 func setDefaultLang() DefaultLang {

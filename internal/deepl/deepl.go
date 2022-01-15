@@ -11,6 +11,13 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strings"
+)
+
+const (
+	FreeHost   = "https://api-free.deepl.com"
+	ProHost    = "https://api.deepl.com"
+	APIVersion = "v2"
 )
 
 type APIClient interface {
@@ -25,11 +32,12 @@ type Client struct {
 	AuthKey    string
 }
 
-func NewClient(rawBaseURL, authKey string) (*Client, error) {
+func NewClient(authKey string) (*Client, error) {
 	if len(authKey) == 0 {
 		return nil, ErrMissingAuthKey
 	}
 
+	rawBaseURL := fmt.Sprintf("%s/%s", defaultHost(authKey), APIVersion)
 	baseURL, err := url.ParseRequestURI(rawBaseURL)
 	if err != nil {
 		return nil, err
@@ -40,6 +48,13 @@ func NewClient(rawBaseURL, authKey string) (*Client, error) {
 		HTTPClient: http.DefaultClient,
 		AuthKey:    authKey,
 	}, nil
+}
+
+func defaultHost(authKey string) string {
+	if !strings.HasSuffix(authKey, ":fx") {
+		return ProHost
+	}
+	return FreeHost
 }
 
 func (c *Client) newRequest(ctx context.Context, method, _path string, body io.Reader) (*http.Request, error) {
