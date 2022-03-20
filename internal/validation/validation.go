@@ -1,11 +1,11 @@
 package validation
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 )
 
-var ErrTextLength = fmt.Errorf("Error: text length is 0")
+var ErrTextLength = errors.New("Error: text length is 0")
 
 func ValidText(text string) (string, error) {
 	if err := validTextLength(trimSpace(text)); err != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/candy12t/deepl-cli/internal/deepl"
 	"github.com/candy12t/deepl-cli/internal/deepl/mock_deepl"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRepl(t *testing.T) {
@@ -77,10 +78,7 @@ func TestRepl(t *testing.T) {
 			out := new(bytes.Buffer)
 			Repl(mockClient, tt.args.sourceLang, tt.args.targetLang, bytes.NewBufferString(tt.args.inputText), out)
 
-			got := out.String()
-			if got != tt.want {
-				t.Fatalf("repl output %q, want %q", got, tt.want)
-			}
+			assert.Equal(t, tt.want, out.String())
 		})
 	}
 }

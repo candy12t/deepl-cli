@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"path"
-	"reflect"
 	"testing"
 
-	"github.com/candy12t/deepl-cli/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTranslate(t *testing.T) {
@@ -32,8 +31,9 @@ func TestTranslate(t *testing.T) {
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
 
-		test.AssertError(t, err, nil)
-		testTranslate(t, got, want)
+		if assert.NoError(t, err) {
+			assert.Equal(t, got, want)
+		}
 	})
 
 	t.Run("failed translate because unspecified target language", func(t *testing.T) {
@@ -56,10 +56,9 @@ func TestTranslate(t *testing.T) {
 		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
 
 		ctx := context.Background()
-		got, err := client.Translate(ctx, "hello", "EN", "")
+		_, err := client.Translate(ctx, "hello", "EN", "")
 
-		test.AssertError(t, err, want)
-		testTranslate(t, got, nil)
+		assert.EqualError(t, err, want.Error())
 	})
 
 	t.Run("failed translate because incorrect DeepL AuthKey", func(t *testing.T) {
@@ -80,22 +79,8 @@ func TestTranslate(t *testing.T) {
 		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
 
 		ctx := context.Background()
-		got, err := client.Translate(ctx, "hello", "EN", "JA")
+		_, err := client.Translate(ctx, "hello", "EN", "JA")
 
-		test.AssertError(t, err, want)
-		testTranslate(t, got, nil)
+		assert.EqualError(t, err, want.Error())
 	})
-}
-
-func testTranslate(t *testing.T, got, want *Translate) {
-	t.Helper()
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("translated text is %s, want %s", got, want)
-	}
-	if got == nil {
-		if want == nil {
-			return
-		}
-		t.Fatal("expected to get an translate response.")
-	}
 }

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -37,4 +38,6 @@ func TestWriteConfig(t *testing.T) {
 	filename := filepath.Join(t.TempDir(), "config.yaml")
 	err := conf.writeDeepLCLIConfig(filename)
 	assert.NoError(t, err)
+	data, _ := parseDeepLCLIConfigFile(filename)
+	fmt.Println(data)
 }
