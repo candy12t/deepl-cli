@@ -12,27 +12,31 @@ func TestSetup(t *testing.T) {
 	tests := []struct {
 		name  string
 		input []string
-		want  *config.Config
+		want  *config.DeepLCLIConfig
 	}{
 		{
 			name:  "setup",
-			input: []string{"test-auth-key", "free", "EN", "JA"},
-			want: &config.Config{
-				AuthKey: "test-auth-key",
-				DefaultLang: config.DefaultLang{
-					SourceLang: "EN",
-					TargetLang: "JA",
+			input: []string{"test-auth-key", "fred", "EN", "JA"},
+			want: &config.DeepLCLIConfig{
+				Auth: config.Auth{
+					AuthKey: "test-auth-key",
+				},
+				DefaultLanguage: config.DefaultLanguage{
+					SourceLanguage: "EN",
+					TargetLanguage: "JA",
 				},
 			},
 		},
 		{
 			name:  "setup validate",
 			input: []string{"test-auth-key", "hoge", "free", "EN", "JA"},
-			want: &config.Config{
-				AuthKey: "test-auth-key",
-				DefaultLang: config.DefaultLang{
-					SourceLang: "EN",
-					TargetLang: "JA",
+			want: &config.DeepLCLIConfig{
+				Auth: config.Auth{
+					AuthKey: "test-auth-key",
+				},
+				DefaultLanguage: config.DefaultLanguage{
+					SourceLanguage: "EN",
+					TargetLanguage: "JA",
 				},
 			},
 		},

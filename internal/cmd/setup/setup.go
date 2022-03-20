@@ -16,26 +16,28 @@ const (
 var languageList = []string{"BG", "CS", "DA", "DE", "EL", "EN", "ES", "ET", "FI", "FR", "HU", "IT", "JA", "LT", "LV", "NL", "PL", "PT", "RO", "RU", "SK", "SL", "SV", "ZH"}
 
 func Setup(inStream io.Reader, outStream io.Writer) error {
-	cfg := PromptSetup(inStream, outStream)
+	conf := PromptSetup(inStream, outStream)
 
-	if err := cfg.Write(); err != nil {
+	if err := conf.WriteDeepLCLIConfig(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func PromptSetup(inStream io.Reader, outStream io.Writer) *config.Config {
+func PromptSetup(inStream io.Reader, outStream io.Writer) *config.DeepLCLIConfig {
 
 	authKey := promptForLine(inStream, outStream, authKeyQuestion)
 	sourceLanguage := promptForSelect(inStream, outStream, sourceLanguageQuestion, languageList)
 	targetLanguage := promptForSelect(inStream, outStream, targetLanguageQuestion, languageList)
 
-	return &config.Config{
-		AuthKey: authKey,
-		DefaultLang: config.DefaultLang{
-			SourceLang: sourceLanguage,
-			TargetLang: targetLanguage,
+	return &config.DeepLCLIConfig{
+		Auth: config.Auth{
+			AuthKey: authKey,
+		},
+		DefaultLanguage: config.DefaultLanguage{
+			SourceLanguage: sourceLanguage,
+			TargetLanguage: targetLanguage,
 		},
 	}
 }

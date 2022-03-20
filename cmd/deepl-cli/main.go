@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
-	cli := cmd.NewCLI(os.Stdin, os.Stdout, os.Stderr, cfg)
+	conf := config.NewDeepLCLIConfig()
+	cli := cmd.NewCLI(os.Stdin, os.Stdout, os.Stderr, conf)
 	code := cli.Run(os.Args)
 	os.Exit(int(code))
 }

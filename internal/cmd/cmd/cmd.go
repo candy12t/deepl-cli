@@ -23,23 +23,21 @@ type CLI struct {
 	InStream  io.Reader
 	OutStream io.Writer
 	ErrStream io.Writer
-
-	cfg *config.Config
+	conf      *config.DeepLCLIConfig
 }
 
-func NewCLI(inStream io.Reader, outStream, errStream io.Writer, cfg *config.Config) *CLI {
+func NewCLI(inStream io.Reader, outStream, errStream io.Writer, conf *config.DeepLCLIConfig) *CLI {
 	return &CLI{
 		InStream:  inStream,
 		OutStream: outStream,
 		ErrStream: errStream,
-		cfg:       cfg,
+		conf:      conf,
 	}
 }
 
 func (c *CLI) Run(args []string) exitCode {
-	defaultSourceLang, defaultTargetLang := c.cfg.DefaultLangs()
-
 	var sourceLang, targetLang string
+	defaultSourceLanguage, defaultTargetLanguage := c.conf.DefaultLanguage.SourceLanguage, c.conf.DefaultLanguage.TargetLanguage
 
 	cli.VersionFlag = &cli.BoolFlag{
 		Name:    "version",
@@ -85,15 +83,13 @@ func (c *CLI) Run(args []string) exitCode {
 					&cli.StringFlag{
 						Name:        "source",
 						Aliases:     []string{"s"},
-						Value:       defaultSourceLang,
-						DefaultText: defaultSourceLang,
+						Value:       defaultSourceLanguage,
 						Destination: &sourceLang,
 					},
 					&cli.StringFlag{
 						Name:        "target",
 						Aliases:     []string{"t"},
-						Value:       defaultTargetLang,
-						DefaultText: defaultTargetLang,
+						Value:       defaultTargetLanguage,
 						Destination: &targetLang,
 					},
 				},
@@ -102,7 +98,7 @@ func (c *CLI) Run(args []string) exitCode {
 						return err
 					}
 					fmt.Fprintf(ctx.App.Writer, "Translate text from %s to %s\n", sourceLang, targetLang)
-					client, err := deepl.NewClient(c.cfg.GetAuthKey())
+					client, err := deepl.NewClient(c.conf.Auth.AuthKey)
 					if err != nil {
 						return err
 					}
@@ -122,7 +118,7 @@ func (c *CLI) Run(args []string) exitCode {
 }
 
 func (c *CLI) checkAuthKey() error {
-	if len(c.cfg.GetAuthKey()) == 0 {
+	if len(c.conf.Auth.AuthKey) == 0 {
 		return fmt.Errorf("To setup, please run `deepl-cli setup`.")
 	}
 	return nil

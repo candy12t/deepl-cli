@@ -57,15 +57,17 @@ func TestRun(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cfg := &config.Config{
-				AuthKey: "test-auth-key",
-				DefaultLang: config.DefaultLang{
-					SourceLang: "EN",
-					TargetLang: "JA",
+			conf := &config.DeepLCLIConfig{
+				Auth: config.Auth{
+					AuthKey: "test-auth-key",
+				},
+				DefaultLanguage: config.DefaultLanguage{
+					SourceLanguage: "EN",
+					TargetLanguage: "JA",
 				},
 			}
 			inStream, outStream, errStream := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
-			cli := NewCLI(inStream, outStream, errStream, cfg)
+			cli := NewCLI(inStream, outStream, errStream, conf)
 			code := cli.Run(tt.args)
 
 			if outStream.String() != tt.wantOut {
