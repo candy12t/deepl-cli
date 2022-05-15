@@ -98,10 +98,7 @@ func (c *CLI) Run(args []string) exitCode {
 						return err
 					}
 					fmt.Fprintf(ctx.App.Writer, "Translate text from %s to %s\n", sourceLang, targetLang)
-					client, err := deepl.NewClient(c.conf.Auth.AuthKey)
-					if err != nil {
-						return err
-					}
+					client := deepl.NewClient(c.conf.Auth.AuthKey)
 					repl.Repl(client, sourceLang, targetLang, ctx.App.Reader, ctx.App.Writer)
 					return nil
 				},

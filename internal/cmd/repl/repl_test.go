@@ -21,7 +21,7 @@ func TestRepl(t *testing.T) {
 	tests := []struct {
 		name          string
 		args          args
-		prepareMockFn func(m *mock_deepl.MockAPIClient)
+		prepareMockFn func(m *mock_deepl.MockAPI)
 		want          string
 	}{
 		{
@@ -31,7 +31,7 @@ func TestRepl(t *testing.T) {
 				sourceLang: "EN",
 				targetLang: "JA",
 			},
-			prepareMockFn: func(m *mock_deepl.MockAPIClient) {
+			prepareMockFn: func(m *mock_deepl.MockAPI) {
 				ctx := context.Background()
 				m.EXPECT().
 					Translate(ctx, "hello", "EN", "JA").
@@ -46,7 +46,7 @@ func TestRepl(t *testing.T) {
 				sourceLang: "EN",
 				targetLang: "JA",
 			},
-			prepareMockFn: func(m *mock_deepl.MockAPIClient) {},
+			prepareMockFn: func(m *mock_deepl.MockAPI) {},
 			want:          fmt.Sprintf("%sError: text length is 0\n%s", PROMPT, PROMPT),
 		},
 		{
@@ -56,7 +56,7 @@ func TestRepl(t *testing.T) {
 				sourceLang: "EN",
 				targetLang: "",
 			},
-			prepareMockFn: func(m *mock_deepl.MockAPIClient) {
+			prepareMockFn: func(m *mock_deepl.MockAPI) {
 				ctx := context.Background()
 				m.EXPECT().
 					Translate(ctx, "hello", "EN", "").
@@ -71,7 +71,7 @@ func TestRepl(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockClient := mock_deepl.NewMockAPIClient(ctrl)
+			mockClient := mock_deepl.NewMockAPI(ctrl)
 
 			tt.prepareMockFn(mockClient)
 

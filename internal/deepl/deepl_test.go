@@ -10,27 +10,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testAuthKey = "test-auth-key"
+const (
+	testProAuthKey  = "test-pro-auth-key"
+	testFreeAuthKey = "test-free-auth-key:fx"
+)
 
 func TestNewClient(t *testing.T) {
-	t.Run("success new deepl client", func(t *testing.T) {
-		c, err := NewClient(testAuthKey)
-		if assert.NoError(t, err) {
-			assert.Equal(t, "https://api.deepl.com/v2", c.BaseURL.String())
-		}
-	})
+	type args struct {
+		authKey string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantURL string
+	}{
+		{
+			name: "deepl client for pro account",
+			args: args{
+				authKey: testProAuthKey,
+			},
+			wantURL: "https://api.deepl.com/v2",
+		},
+		{
+			name: "deepl client for free account",
+			args: args{
+				authKey: testFreeAuthKey,
+			},
+			wantURL: "https://api-free.deepl.com/v2",
+		},
+	}
 
-	t.Run("failed new deepl client because missing deepl authkey", func(t *testing.T) {
-		_, err := NewClient("")
-		assert.EqualError(t, err, ErrMissingAuthKey.Error())
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := NewClient(tt.args.authKey)
+			assert.Equal(t, tt.wantURL, c.BaseURL.String())
+		})
+	}
 }
 
 func setup() (*Client, *http.ServeMux, func()) {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
-	client, _ := NewClient(testAuthKey)
+	client := NewClient(testProAuthKey)
 	url, _ := url.ParseRequestURI(server.URL)
 	client.BaseURL = url
 

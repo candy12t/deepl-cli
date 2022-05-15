@@ -12,31 +12,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockAPIClient is a mock of APIClient interface.
-type MockAPIClient struct {
+// MockAPI is a mock of API interface.
+type MockAPI struct {
 	ctrl     *gomock.Controller
-	recorder *MockAPIClientMockRecorder
+	recorder *MockAPIMockRecorder
 }
 
-// MockAPIClientMockRecorder is the mock recorder for MockAPIClient.
-type MockAPIClientMockRecorder struct {
-	mock *MockAPIClient
+// MockAPIMockRecorder is the mock recorder for MockAPI.
+type MockAPIMockRecorder struct {
+	mock *MockAPI
 }
 
-// NewMockAPIClient creates a new mock instance.
-func NewMockAPIClient(ctrl *gomock.Controller) *MockAPIClient {
-	mock := &MockAPIClient{ctrl: ctrl}
-	mock.recorder = &MockAPIClientMockRecorder{mock}
+// NewMockAPI creates a new mock instance.
+func NewMockAPI(ctrl *gomock.Controller) *MockAPI {
+	mock := &MockAPI{ctrl: ctrl}
+	mock.recorder = &MockAPIMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAPIClient) EXPECT() *MockAPIClientMockRecorder {
+func (m *MockAPI) EXPECT() *MockAPIMockRecorder {
 	return m.recorder
 }
 
 // Translate mocks base method.
-func (m *MockAPIClient) Translate(arg0 context.Context, arg1, arg2, arg3 string) (*deepl.Translate, error) {
+func (m *MockAPI) Translate(arg0 context.Context, arg1, arg2, arg3 string) (*deepl.Translate, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Translate", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(*deepl.Translate)
@@ -45,7 +45,7 @@ func (m *MockAPIClient) Translate(arg0 context.Context, arg1, arg2, arg3 string)
 }
 
 // Translate indicates an expected call of Translate.
-func (mr *MockAPIClientMockRecorder) Translate(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+func (mr *MockAPIMockRecorder) Translate(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Translate", reflect.TypeOf((*MockAPIClient)(nil).Translate), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Translate", reflect.TypeOf((*MockAPI)(nil).Translate), arg0, arg1, arg2, arg3)
 }

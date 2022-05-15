@@ -5,7 +5,6 @@ package deepl
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,16 +14,17 @@ import (
 )
 
 const (
-	FreeHost   = "https://api-free.deepl.com"
-	ProHost    = "https://api.deepl.com"
-	APIVersion = "v2"
+	FreeHost             = "https://api-free.deepl.com"
+	ProHost              = "https://api.deepl.com"
+	APIVersion           = "v2"
+	EndpointDetermineKey = ":fx"
 )
 
-type APIClient interface {
+type API interface {
 	Translate(context.Context, string, string, string) (*Translate, error)
 }
 
-var ErrMissingAuthKey = errors.New("missing DeepL authKey")
+var _ API = &Client{}
 
 type Client struct {
 	BaseURL    *url.URL
@@ -32,26 +32,19 @@ type Client struct {
 	AuthKey    string
 }
 
-func NewClient(authKey string) (*Client, error) {
-	if len(authKey) == 0 {
-		return nil, ErrMissingAuthKey
-	}
-
-	rawBaseURL := fmt.Sprintf("%s/%s", defaultHost(authKey), APIVersion)
-	baseURL, err := url.ParseRequestURI(rawBaseURL)
-	if err != nil {
-		return nil, err
-	}
+func NewClient(authKey string) *Client {
+	baseURL, _ := url.Parse(defaultHost(authKey))
+	baseURL.Path = path.Join(baseURL.Path, APIVersion)
 
 	return &Client{
 		BaseURL:    baseURL,
 		HTTPClient: http.DefaultClient,
 		AuthKey:    authKey,
-	}, nil
+	}
 }
 
 func defaultHost(authKey string) string {
-	if !strings.HasSuffix(authKey, ":fx") {
+	if !strings.HasSuffix(authKey, EndpointDetermineKey) {
 		return ProHost
 	}
 	return FreeHost

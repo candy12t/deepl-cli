@@ -18,7 +18,7 @@ func TestTranslate(t *testing.T) {
 
 		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
-			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testAuthKey))
+			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
 			testBody(t, r, "source_lang=EN&target_lang=JA&text=hello")
 
@@ -42,7 +42,7 @@ func TestTranslate(t *testing.T) {
 
 		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
-			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testAuthKey))
+			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
 			testBody(t, r, "source_lang=EN&target_lang=&text=hello")
 
@@ -67,7 +67,7 @@ func TestTranslate(t *testing.T) {
 
 		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
-			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testAuthKey))
+			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
 			testBody(t, r, "source_lang=EN&target_lang=JA&text=hello")
 

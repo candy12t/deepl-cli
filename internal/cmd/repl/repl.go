@@ -12,7 +12,7 @@ import (
 
 const PROMPT = ">> "
 
-func Repl(client deepl.APIClient, sourceLang, targetLang string, in io.Reader, out io.Writer) {
+func Repl(client deepl.API, sourceLang, targetLang string, in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	for {
