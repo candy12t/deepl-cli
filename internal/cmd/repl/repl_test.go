@@ -35,7 +35,7 @@ func TestRepl(t *testing.T) {
 				ctx := context.Background()
 				m.EXPECT().
 					Translate(ctx, "hello", "EN", "JA").
-					Return(&deepl.Translate{Translations: []deepl.Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}, nil)
+					Return(&deepl.TranslateList{Translations: []deepl.Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}, nil)
 			},
 			want: fmt.Sprintf("%sこんにちわ\n%s", PROMPT, PROMPT),
 		},

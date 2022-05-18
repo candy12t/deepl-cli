@@ -16,7 +16,7 @@ func TestTranslate(t *testing.T) {
 		client, mux, teardown := setup()
 		defer teardown()
 
-		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/translate", func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
 			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
@@ -26,7 +26,7 @@ func TestTranslate(t *testing.T) {
 			w.Write([]byte(`{"translations":[{"detected_source_language":"EN","text":"こんにちわ"}]}`))
 		})
 
-		want := &Translate{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
+		want := &TranslateList{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
 
 		ctx := context.Background()
 		got, err := client.Translate(ctx, "hello", "EN", "JA")
@@ -40,7 +40,7 @@ func TestTranslate(t *testing.T) {
 		client, mux, teardown := setup()
 		defer teardown()
 
-		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/translate", func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
 			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
@@ -52,7 +52,7 @@ func TestTranslate(t *testing.T) {
 		})
 
 		u := *client.BaseURL
-		u.Path = path.Join(client.BaseURL.Path, TRANSLATE)
+		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
 
 		ctx := context.Background()
@@ -65,7 +65,7 @@ func TestTranslate(t *testing.T) {
 		client, mux, teardown := setup()
 		defer teardown()
 
-		mux.HandleFunc(TRANSLATE, func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/translate", func(w http.ResponseWriter, r *http.Request) {
 			testHeader(t, r, "Content-Type", "application/x-www-form-urlencoded")
 			testHeader(t, r, "Authorization", fmt.Sprintf("DeepL-Auth-Key %s", testProAuthKey))
 			testMethod(t, r, "POST")
@@ -75,7 +75,7 @@ func TestTranslate(t *testing.T) {
 		})
 
 		u := *client.BaseURL
-		u.Path = path.Join(client.BaseURL.Path, TRANSLATE)
+		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
 
 		ctx := context.Background()

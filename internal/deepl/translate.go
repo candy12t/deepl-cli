@@ -6,9 +6,7 @@ import (
 	"strings"
 )
 
-const TRANSLATE = "/translate"
-
-type Translate struct {
+type TranslateList struct {
 	Translations []Translation `json:"translations"`
 }
 
@@ -17,13 +15,14 @@ type Translation struct {
 	Text                   string `json:"text"`
 }
 
-func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang string) (*Translate, error) {
-	values := url.Values{
-		"text":        {text},
-		"source_lang": {sourceLang},
-		"target_lang": {targetLang},
-	}
-	req, err := c.newRequest(ctx, "POST", TRANSLATE, strings.NewReader(values.Encode()))
+// DeepL API docs: https://www.deepl.com/ja/docs-api/translating-text
+func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang string) (*TranslateList, error) {
+	values := url.Values{}
+	values.Add("text", text)
+	values.Add("source_lang", sourceLang)
+	values.Add("target_lang", targetLang)
+
+	req, err := c.newRequest(ctx, "POST", "/translate", strings.NewReader(values.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -35,14 +34,14 @@ func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang str
 	}
 	defer resp.Body.Close()
 
-	translate := new(Translate)
-	if err := decodeBody(resp, translate); err != nil {
+	translateList := new(TranslateList)
+	if err := decodeBody(resp, translateList); err != nil {
 		return nil, err
 	}
 
-	return translate, nil
+	return translateList, nil
 }
 
-func (t *Translate) TranslateText() string {
+func (t *TranslateList) TranslateText() string {
 	return t.Translations[0].Text
 }

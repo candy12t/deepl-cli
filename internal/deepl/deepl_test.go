@@ -16,6 +16,13 @@ const (
 )
 
 func TestNewClient(t *testing.T) {
+	c := NewClient(testProAuthKey)
+	assert.Equal(t, "https://api.deepl.com/v2", c.BaseURL.String())
+	c2 := NewClient(testProAuthKey)
+	assert.NotSame(t, c.HTTPClient, c2.HTTPClient)
+}
+
+func TestNewClientURLbyAccountType(t *testing.T) {
 	type args struct {
 		authKey string
 	}

@@ -36,10 +36,10 @@ func (m *MockAPI) EXPECT() *MockAPIMockRecorder {
 }
 
 // Translate mocks base method.
-func (m *MockAPI) Translate(arg0 context.Context, arg1, arg2, arg3 string) (*deepl.Translate, error) {
+func (m *MockAPI) Translate(arg0 context.Context, arg1, arg2, arg3 string) (*deepl.TranslateList, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Translate", arg0, arg1, arg2, arg3)
-	ret0, _ := ret[0].(*deepl.Translate)
+	ret0, _ := ret[0].(*deepl.TranslateList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

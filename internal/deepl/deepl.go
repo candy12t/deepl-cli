@@ -21,7 +21,7 @@ const (
 )
 
 type API interface {
-	Translate(context.Context, string, string, string) (*Translate, error)
+	Translate(context.Context, string, string, string) (*TranslateList, error)
 }
 
 var _ API = &Client{}
@@ -38,7 +38,7 @@ func NewClient(authKey string) *Client {
 
 	return &Client{
 		BaseURL:    baseURL,
-		HTTPClient: http.DefaultClient,
+		HTTPClient: &http.Client{},
 		AuthKey:    authKey,
 	}
 }
