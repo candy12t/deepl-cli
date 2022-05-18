@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/candy12t/deepl-cli/internal/cmd/cmd"
+	"github.com/candy12t/deepl-cli/internal/cmd"
 	"github.com/candy12t/deepl-cli/internal/config"
 )
 
