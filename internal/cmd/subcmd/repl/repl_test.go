@@ -2,7 +2,6 @@ package repl
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"testing"
 
@@ -32,9 +31,8 @@ func TestRepl(t *testing.T) {
 				targetLang: "JA",
 			},
 			prepareMockFn: func(m *mock_deepl.MockAPI) {
-				ctx := context.Background()
 				m.EXPECT().
-					Translate(ctx, "hello", "EN", "JA").
+					Translate("hello", "EN", "JA").
 					Return(&deepl.TranslateList{Translations: []deepl.Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}, nil)
 			},
 			want: fmt.Sprintf("%sこんにちわ\n%s", PROMPT, PROMPT),
@@ -57,9 +55,8 @@ func TestRepl(t *testing.T) {
 				targetLang: "",
 			},
 			prepareMockFn: func(m *mock_deepl.MockAPI) {
-				ctx := context.Background()
 				m.EXPECT().
-					Translate(ctx, "hello", "EN", "").
+					Translate("hello", "EN", "").
 					Return(nil, fmt.Errorf(`HTTP 400: "Value for 'target_lang' not supported." (https://api-free.deepl.com/v2/translate)`))
 			},
 			want: fmt.Sprintf("%sHTTP 400: \"Value for 'target_lang' not supported.\" (https://api-free.deepl.com/v2/translate)\n", PROMPT),

@@ -3,7 +3,6 @@
 package deepl
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,7 +20,7 @@ const (
 )
 
 type API interface {
-	Translate(context.Context, string, string, string) (*TranslateList, error)
+	Translate(string, string, string) (*TranslateList, error)
 }
 
 var _ API = &Client{}
@@ -50,7 +49,7 @@ func defaultHost(authKey string) string {
 	return FreeHost
 }
 
-func (c *Client) newRequest(ctx context.Context, method, _path string, body io.Reader) (*http.Request, error) {
+func (c *Client) newRequest(method, _path string, body io.Reader) (*http.Request, error) {
 	u := *c.BaseURL
 	u.Path = path.Join(c.BaseURL.Path, _path)
 
@@ -59,7 +58,6 @@ func (c *Client) newRequest(ctx context.Context, method, _path string, body io.R
 		return nil, err
 	}
 
-	req = req.WithContext(ctx)
 	req.Header.Set("Authorization", fmt.Sprintf("DeepL-Auth-Key %s", c.AuthKey))
 
 	return req, nil

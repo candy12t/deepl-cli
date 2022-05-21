@@ -5,7 +5,6 @@
 package mock_deepl
 
 import (
-	context "context"
 	reflect "reflect"
 
 	deepl "github.com/candy12t/deepl-cli/internal/deepl"
@@ -36,16 +35,16 @@ func (m *MockAPI) EXPECT() *MockAPIMockRecorder {
 }
 
 // Translate mocks base method.
-func (m *MockAPI) Translate(arg0 context.Context, arg1, arg2, arg3 string) (*deepl.TranslateList, error) {
+func (m *MockAPI) Translate(arg0, arg1, arg2 string) (*deepl.TranslateList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Translate", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "Translate", arg0, arg1, arg2)
 	ret0, _ := ret[0].(*deepl.TranslateList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Translate indicates an expected call of Translate.
-func (mr *MockAPIMockRecorder) Translate(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+func (mr *MockAPIMockRecorder) Translate(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Translate", reflect.TypeOf((*MockAPI)(nil).Translate), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Translate", reflect.TypeOf((*MockAPI)(nil).Translate), arg0, arg1, arg2)
 }

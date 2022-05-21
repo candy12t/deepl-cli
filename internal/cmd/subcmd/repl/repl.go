@@ -2,7 +2,6 @@ package repl
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"io"
 
@@ -28,8 +27,7 @@ func Repl(client deepl.API, sourceLang, targetLang string, in io.Reader, out io.
 			continue
 		}
 
-		ctx := context.Background()
-		t, err := client.Translate(ctx, validedText, sourceLang, targetLang)
+		t, err := client.Translate(validedText, sourceLang, targetLang)
 		if err != nil {
 			fmt.Fprintln(out, err)
 			return

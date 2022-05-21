@@ -1,7 +1,6 @@
 package deepl
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"path"
@@ -28,8 +27,7 @@ func TestTranslate(t *testing.T) {
 
 		want := &TranslateList{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
 
-		ctx := context.Background()
-		got, err := client.Translate(ctx, "hello", "EN", "JA")
+		got, err := client.Translate("hello", "EN", "JA")
 
 		if assert.NoError(t, err) {
 			assert.Equal(t, got, want)
@@ -55,8 +53,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
 
-		ctx := context.Background()
-		_, err := client.Translate(ctx, "hello", "EN", "")
+		_, err := client.Translate("hello", "EN", "")
 
 		assert.EqualError(t, err, want.Error())
 	})
@@ -78,8 +75,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
 
-		ctx := context.Background()
-		_, err := client.Translate(ctx, "hello", "EN", "JA")
+		_, err := client.Translate("hello", "EN", "JA")
 
 		assert.EqualError(t, err, want.Error())
 	})
