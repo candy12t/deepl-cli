@@ -1,7 +1,7 @@
 OBJ = bin/deepl-cli
 VERSION := $(shell git describe --tags --abbrev=0)
 
-all: clean build
+all: test clean build
 
 .PHONY: build
 build:
