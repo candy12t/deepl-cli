@@ -5,10 +5,11 @@ import (
 	"io"
 
 	"github.com/candy12t/deepl-cli/internal/build"
-	"github.com/candy12t/deepl-cli/internal/cmd/subcmd/repl"
 	"github.com/candy12t/deepl-cli/internal/cmd/subcmd/setup"
 	"github.com/candy12t/deepl-cli/internal/config"
+	"github.com/candy12t/deepl-cli/internal/controller"
 	"github.com/candy12t/deepl-cli/internal/deepl"
+	"github.com/candy12t/deepl-cli/internal/usecase"
 	"github.com/urfave/cli/v2"
 )
 
@@ -97,9 +98,10 @@ func (c *CLI) Run(args []string) exitCode {
 					if err := c.checkAuthKey(); err != nil {
 						return err
 					}
-					fmt.Fprintf(ctx.App.Writer, "Translate text from %s to %s\n", sourceLang, targetLang)
-					client := deepl.NewClient(c.conf.Auth.AuthKey)
-					repl.Repl(client, sourceLang, targetLang, ctx.App.Reader, ctx.App.Writer)
+					deeplCli := deepl.NewClient(c.conf.Auth.AuthKey)
+					uc := usecase.NewTranslation(deeplCli)
+					replCtrl := controller.NewRepl(uc, sourceLang, targetLang, ctx.App.Reader, ctx.App.Writer)
+					replCtrl.Apply()
 					return nil
 				},
 			},
