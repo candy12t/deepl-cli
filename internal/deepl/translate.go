@@ -15,7 +15,7 @@ type Translation struct {
 }
 
 // DeepL API docs: https://www.deepl.com/ja/docs-api/translating-text
-func (c *Client) Translate(text, sourceLang, targetLang string) (*TranslateList, error) {
+func (c *Client) translate(text, sourceLang, targetLang string) (*TranslateList, error) {
 	values := url.Values{}
 	values.Add("text", text)
 	values.Add("source_lang", sourceLang)
@@ -39,8 +39,4 @@ func (c *Client) Translate(text, sourceLang, targetLang string) (*TranslateList,
 	}
 
 	return translateList, nil
-}
-
-func (t *TranslateList) TranslateText() string {
-	return t.Translations[0].Text
 }

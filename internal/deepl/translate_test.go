@@ -27,7 +27,7 @@ func TestTranslate(t *testing.T) {
 
 		want := &TranslateList{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
 
-		got, err := client.Translate("hello", "EN", "JA")
+		got, err := client.translate("hello", "EN", "JA")
 
 		if assert.NoError(t, err) {
 			assert.Equal(t, got, want)
@@ -53,7 +53,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
 
-		_, err := client.Translate("hello", "EN", "")
+		_, err := client.translate("hello", "EN", "")
 
 		assert.EqualError(t, err, want.Error())
 	})
@@ -75,7 +75,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
 
-		_, err := client.Translate("hello", "EN", "JA")
+		_, err := client.translate("hello", "EN", "JA")
 
 		assert.EqualError(t, err, want.Error())
 	})

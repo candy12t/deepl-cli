@@ -19,12 +19,6 @@ const (
 	EndpointDetermineKey = ":fx"
 )
 
-type API interface {
-	Translate(string, string, string) (*TranslateList, error)
-}
-
-var _ API = &Client{}
-
 type Client struct {
 	BaseURL    *url.URL
 	HTTPClient *http.Client
