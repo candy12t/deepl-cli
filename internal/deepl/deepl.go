@@ -1,5 +1,3 @@
-//go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/$GOFILE
-
 package deepl
 
 import (
