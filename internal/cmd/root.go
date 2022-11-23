@@ -5,11 +5,7 @@ import (
 	"io"
 
 	"github.com/candy12t/deepl-cli/internal/build"
-	"github.com/candy12t/deepl-cli/internal/cmd/subcmd/setup"
 	"github.com/candy12t/deepl-cli/internal/config"
-	"github.com/candy12t/deepl-cli/internal/controller"
-	"github.com/candy12t/deepl-cli/internal/deepl"
-	"github.com/candy12t/deepl-cli/internal/usecase"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,104 +17,62 @@ const (
 )
 
 type CLI struct {
-	InStream  io.Reader
-	OutStream io.Writer
-	ErrStream io.Writer
-	conf      *config.DeepLCLIConfig
+	Reader    io.Reader
+	Writer    io.Writer
+	ErrWriter io.Writer
 }
 
-func NewCLI(inStream io.Reader, outStream, errStream io.Writer, conf *config.DeepLCLIConfig) *CLI {
+func NewCLI(reader io.Reader, writer, errWriter io.Writer) *CLI {
 	return &CLI{
-		InStream:  inStream,
-		OutStream: outStream,
-		ErrStream: errStream,
-		conf:      conf,
+		Reader:    reader,
+		Writer:    writer,
+		ErrWriter: errWriter,
 	}
 }
 
-func (c *CLI) Run(args []string) exitCode {
-	var sourceLang, targetLang string
-	defaultSourceLanguage, defaultTargetLanguage := c.conf.DefaultLanguage.SourceLanguage, c.conf.DefaultLanguage.TargetLanguage
-
+func (c *CLI) Run(args []string, conf *config.DeepLCLIConfig) exitCode {
 	cli.VersionFlag = &cli.BoolFlag{
 		Name:    "version",
 		Aliases: []string{"v"},
 		Usage:   "show deepl-cli version",
 	}
 
+	cli.HelpFlag = &cli.BoolFlag{
+		Name:    "help",
+		Aliases: []string{"h"},
+		Usage:   "Show help for command",
+	}
+
 	app := &cli.App{
-		Name:                 "deepl-cli",
-		Usage:                "unofficial DeepL command line tool",
-		Version:              build.Version,
-		Reader:               c.InStream,
-		Writer:               c.OutStream,
-		ErrWriter:            c.ErrStream,
-		EnableBashCompletion: true,
-		HideHelp:             true,
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "help",
-				Aliases: []string{"h"},
-				Usage:   "Show help for command",
-			},
-		},
+		Name:            "deepl-cli",
+		Usage:           "unofficial DeepL command line tool.",
+		Version:         build.Version,
+		Reader:          c.Reader,
+		Writer:          c.Writer,
+		ErrWriter:       c.ErrWriter,
+		HideHelpCommand: true,
 		CommandNotFound: func(ctx *cli.Context, command string) {
 			fmt.Fprintf(ctx.App.Writer, "unknown command %q for %q\n", command, "deepl-cli")
 		},
 		Commands: []*cli.Command{
-			{
-				Name:  "setup",
-				Usage: "Setup for using this cli",
-				Action: func(ctx *cli.Context) error {
-					err := setup.Setup(ctx.App.Reader, ctx.App.Writer)
-					if err != nil {
-						return err
-					}
-					return nil
-				},
-			},
-			{
-				Name:  "repl",
-				Usage: "Translate with REPL",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:        "source",
-						Aliases:     []string{"s"},
-						Value:       defaultSourceLanguage,
-						Destination: &sourceLang,
-					},
-					&cli.StringFlag{
-						Name:        "target",
-						Aliases:     []string{"t"},
-						Value:       defaultTargetLanguage,
-						Destination: &targetLang,
-					},
-				},
-				Action: func(ctx *cli.Context) error {
-					if err := c.checkAuthKey(); err != nil {
-						return err
-					}
-					deeplCli := deepl.NewClient(c.conf.Auth.AuthKey)
-					uc := usecase.NewTranslation(deeplCli)
-					replCtrl := controller.NewRepl(uc, sourceLang, targetLang, ctx.App.Reader, ctx.App.Writer)
-					replCtrl.Apply()
-					return nil
-				},
-			},
+			NewCmdRepl(conf),
+			NewCmdConfigure(),
 		},
 	}
 
 	if err := app.Run(args); err != nil {
-		fmt.Fprintln(c.ErrStream, err)
+		fmt.Fprintln(app.ErrWriter, err)
 		return exitErr
 	}
 
 	return exitOK
 }
 
-func (c *CLI) checkAuthKey() error {
-	if len(c.conf.Auth.AuthKey) == 0 {
-		return fmt.Errorf("To setup, please run `deepl-cli setup`.")
+func CheckAuthKeyAction(authKey string) cli.BeforeFunc {
+	return func(ctx *cli.Context) error {
+		if len(authKey) == 0 {
+			return fmt.Errorf("To get started with deepl-cli, please run: `deepl-cli configure`")
+		}
+		return nil
 	}
-	return nil
 }

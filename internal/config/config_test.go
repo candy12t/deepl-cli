@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -10,34 +9,33 @@ import (
 
 func TestParseConfig(t *testing.T) {
 	input := `
-auth:
-  auth_key: "test-auth-key"
+credential:
+  deepl_auth_key: "test-auth-key"
 default_language:
-  source_language: "JA"
-  target_language: "EN"
+  source: "JA"
+  target: "EN"
 `
 
 	conf, err := parseDeepLCLIConfigData([]byte(input))
 	if assert.NoError(t, err) {
-		assert.Equal(t, "test-auth-key", conf.Auth.AuthKey)
-		assert.Equal(t, "JA", conf.DefaultLanguage.SourceLanguage)
-		assert.Equal(t, "EN", conf.DefaultLanguage.TargetLanguage)
+		assert.Equal(t, "test-auth-key", conf.Credential.DeepLAuthKey)
+		assert.Equal(t, "JA", conf.DefaultLanguage.Source)
+		assert.Equal(t, "EN", conf.DefaultLanguage.Target)
 	}
 }
 
 func TestWriteConfig(t *testing.T) {
 	conf := DeepLCLIConfig{
-		Auth: Auth{
-			AuthKey: "test-auth-key",
+		Credential: Credential{
+			DeepLAuthKey: "test-auth-key",
 		},
 		DefaultLanguage: DefaultLanguage{
-			SourceLanguage: "JA",
-			TargetLanguage: "EN",
+			Source: "JA",
+			Target: "EN",
 		},
 	}
 	filename := filepath.Join(t.TempDir(), "config.yaml")
 	err := conf.writeDeepLCLIConfig(filename)
 	assert.NoError(t, err)
-	data, _ := parseDeepLCLIConfigFile(filename)
-	fmt.Println(data)
+	parseDeepLCLIConfigFile(filename)
 }

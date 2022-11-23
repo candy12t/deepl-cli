@@ -1,23 +1,27 @@
-//go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/$GOFILE
-
 package deepl
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/candy12t/deepl-cli/internal/repository"
 )
 
 const (
-	FreeHost             = "https://api-free.deepl.com"
-	ProHost              = "https://api.deepl.com"
-	APIVersion           = "v2"
-	EndpointDetermineKey = ":fx"
+	FreeHost   = "https://api-free.deepl.com"
+	ProHost    = "https://api.deepl.com"
+	APIVersion = "v2"
+
+	AccountPlanIdentificationKey = ":fx"
 )
+
+var _ repository.Translater = &Client{}
 
 type Client struct {
 	BaseURL    *url.URL
@@ -37,13 +41,17 @@ func NewClient(authKey string) *Client {
 }
 
 func defaultHost(authKey string) string {
-	if !strings.HasSuffix(authKey, EndpointDetermineKey) {
+	if isPro(authKey) {
 		return ProHost
 	}
 	return FreeHost
 }
 
-func (c *Client) newRequest(method, _path string, body io.Reader) (*http.Request, error) {
+func isPro(authKey string) bool {
+	return !strings.HasSuffix(authKey, AccountPlanIdentificationKey)
+}
+
+func (c *Client) NewRequest(method, _path string, body io.Reader) (*http.Request, error) {
 	u := *c.BaseURL
 	u.Path = path.Join(c.BaseURL.Path, _path)
 
@@ -57,12 +65,20 @@ func (c *Client) newRequest(method, _path string, body io.Reader) (*http.Request
 	return req, nil
 }
 
-func decodeBody(resp *http.Response, out interface{}) error {
+func (c *Client) Do(req *http.Request, v interface{}) error {
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
 	success := resp.StatusCode >= 200 && resp.StatusCode < 300
 	if !success {
 		return HandleHTTPError(resp)
 	}
 
-	decoder := json.NewDecoder(resp.Body)
-	return decoder.Decode(out)
+	if err := json.NewDecoder(resp.Body).Decode(v); !errors.Is(err, io.EOF) {
+		return err
+	}
+	return nil
 }

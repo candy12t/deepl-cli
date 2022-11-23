@@ -9,17 +9,17 @@ import (
 )
 
 type DeepLCLIConfig struct {
-	Auth            Auth            `yaml:"auth"`
+	Credential      Credential      `yaml:"credential"`
 	DefaultLanguage DefaultLanguage `yaml:"default_language"`
 }
 
-type Auth struct {
-	AuthKey string `yaml:"auth_key"`
+type Credential struct {
+	DeepLAuthKey string `yaml:"deepl_auth_key"`
 }
 
 type DefaultLanguage struct {
-	SourceLanguage string `yaml:"source_language"`
-	TargetLanguage string `yaml:"target_language"`
+	Source string `yaml:"source"`
+	Target string `yaml:"target"`
 }
 
 func configFile() string {
@@ -34,7 +34,7 @@ func NewDeepLCLIConfig() *DeepLCLIConfig {
 			DefaultLanguage: setDefaultLanguage(),
 		}
 	}
-	if len(conf.DefaultLanguage.SourceLanguage) == 0 || len(conf.DefaultLanguage.TargetLanguage) == 0 {
+	if len(conf.DefaultLanguage.Source) == 0 || len(conf.DefaultLanguage.Target) == 0 {
 		conf.DefaultLanguage = setDefaultLanguage()
 	}
 	return conf
@@ -59,8 +59,8 @@ func parseDeepLCLIConfigData(data []byte) (*DeepLCLIConfig, error) {
 
 func setDefaultLanguage() DefaultLanguage {
 	return DefaultLanguage{
-		SourceLanguage: "JA",
-		TargetLanguage: "EN",
+		Source: "JA",
+		Target: "EN",
 	}
 }
 

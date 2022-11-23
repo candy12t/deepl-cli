@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRun(t *testing.T) {
+func TestRun_Success(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         []string
@@ -36,36 +36,52 @@ func TestRun(t *testing.T) {
 			wantOut:      fmt.Sprintf("unknown command %q for \"deepl-cli\"\n", "hoge"),
 			wantExitCode: exitOK,
 		},
-		{
-			name:         "repl",
-			args:         strings.Split("deepl-cli repl", " "),
-			wantOut:      fmt.Sprintf("Translate text from %s to %s\n>> ", "EN", "JA"),
-			wantExitCode: exitOK,
-		},
-		{
-			name:         "repl with options",
-			args:         strings.Split("deepl-cli repl -s JA -t EN", " "),
-			wantOut:      fmt.Sprintf("Translate text from %s to %s\n>> ", "JA", "EN"),
-			wantExitCode: exitOK,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			conf := &config.DeepLCLIConfig{
-				Auth: config.Auth{
-					AuthKey: "test-auth-key",
+				Credential: config.Credential{
+					DeepLAuthKey: "test-auth-key",
 				},
 				DefaultLanguage: config.DefaultLanguage{
-					SourceLanguage: "EN",
-					TargetLanguage: "JA",
+					Source: "EN",
+					Target: "JA",
 				},
 			}
-			inStream, outStream, errStream := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
-			cli := NewCLI(inStream, outStream, errStream, conf)
-			code := cli.Run(tt.args)
+			reader, writer, errWriter := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
+			cli := NewCLI(reader, writer, errWriter)
+			code := cli.Run(tt.args, conf)
 
-			assert.Equal(t, tt.wantOut, outStream.String())
+			assert.Equal(t, tt.wantOut, writer.String())
+			assert.Equal(t, tt.wantExitCode, code)
+		})
+	}
+}
+
+func TestRun_Failed(t *testing.T) {
+	tests := []struct {
+		name         string
+		args         []string
+		wantOut      string
+		wantExitCode exitCode
+	}{
+		{
+			name:         "check auth key",
+			args:         strings.Split("deepl-cli repl", " "),
+			wantOut:      fmt.Sprintf("To get started with deepl-cli, please run: `deepl-cli configure`\n"),
+			wantExitCode: exitErr,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			conf := &config.DeepLCLIConfig{}
+			reader, writer, errWriter := new(bytes.Buffer), new(bytes.Buffer), new(bytes.Buffer)
+			cli := NewCLI(reader, writer, errWriter)
+			code := cli.Run(tt.args, conf)
+
+			assert.Equal(t, tt.wantOut, errWriter.String())
 			assert.Equal(t, tt.wantExitCode, code)
 		})
 	}

@@ -10,7 +10,7 @@
 go install:
 
 ```shell
-go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.3.0
+go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.4.0
 ```
 
 ## setup

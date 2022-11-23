@@ -6,6 +6,7 @@ import (
 	"path"
 	"testing"
 
+	"github.com/candy12t/deepl-cli/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,12 +23,17 @@ func TestTranslate(t *testing.T) {
 			testBody(t, r, "source_lang=EN&target_lang=JA&text=hello")
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"translations":[{"detected_source_language":"EN","text":"こんにちわ"}]}`))
+			w.Write([]byte(`{"translations":[{"detected_source_language":"EN","text":"こんにちは"}]}`))
 		})
 
-		want := &TranslateList{Translations: []Translation{{DetectedSourceLanguage: "EN", Text: "こんにちわ"}}}
+		want := &model.TranslateText{
+			OriginalText:   "hello",
+			TranslateText:  "こんにちは",
+			SourceLanguage: "EN",
+			TargetLanguage: "JA",
+		}
 
-		got, err := client.translate("hello", "EN", "JA")
+		got, err := client.TranslateText("hello", "EN", "JA")
 
 		if assert.NoError(t, err) {
 			assert.Equal(t, got, want)
@@ -53,7 +59,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusBadRequest, RequestURL: u.String(), Message: `"Value for 'target_lang' not supported."`}
 
-		_, err := client.translate("hello", "EN", "")
+		_, err := client.TranslateText("hello", "EN", "")
 
 		assert.EqualError(t, err, want.Error())
 	})
@@ -75,7 +81,7 @@ func TestTranslate(t *testing.T) {
 		u.Path = path.Join(client.BaseURL.Path, "/translate")
 		want := HTTPError{StatusCode: http.StatusForbidden, RequestURL: u.String(), Message: "403 Forbidden"}
 
-		_, err := client.translate("hello", "EN", "JA")
+		_, err := client.TranslateText("hello", "EN", "JA")
 
 		assert.EqualError(t, err, want.Error())
 	})

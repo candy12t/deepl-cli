@@ -9,7 +9,7 @@ import (
 
 func main() {
 	conf := config.NewDeepLCLIConfig()
-	cli := cmd.NewCLI(os.Stdin, os.Stdout, os.Stderr, conf)
-	code := cli.Run(os.Args)
+	cli := cmd.NewCLI(os.Stdin, os.Stdout, os.Stderr)
+	code := cli.Run(os.Args, conf)
 	os.Exit(int(code))
 }

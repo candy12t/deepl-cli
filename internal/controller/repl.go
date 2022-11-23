@@ -1,58 +1,47 @@
 package controller
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
-	"io"
+	"strings"
 
-	"github.com/candy12t/deepl-cli/internal/entity"
-	"github.com/candy12t/deepl-cli/internal/usecase"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/candy12t/deepl-cli/internal/repository"
+	"github.com/urfave/cli/v2"
 )
 
-const PROMPT = ">> "
+var ErrTextLength = errors.New("Error: input text length is 0")
 
-type Repl struct {
-	uc *usecase.Translation
-	*entity.Languages
-	inStream  io.Reader
-	outStream io.Writer
-}
+func ReplAction(client repository.Translater) cli.ActionFunc {
+	return func(ctx *cli.Context) error {
+		sourceLanguage := ctx.String("source")
+		targetLanguage := ctx.String("target")
+		message := fmt.Sprintf("(%s->%s) >>", sourceLanguage, targetLanguage)
 
-func NewRepl(uc *usecase.Translation, sourceLanguage, targetLanguage string, inStream io.Reader, outStream io.Writer) *Repl {
-	return &Repl{
-		uc: uc,
-		Languages: &entity.Languages{
-			SourceLanguage: sourceLanguage,
-			TargetLanguage: targetLanguage,
-		},
-		inStream:  inStream,
-		outStream: outStream,
-	}
-}
+		for {
+			var text string
+			prompt := &survey.Input{
+				Message: message,
+			}
+			if err := survey.AskOne(prompt, &text, survey.WithIcons(func(icons *survey.IconSet) {
+				icons.Question.Text = "deepl-cli"
+				icons.Question.Format = "default+hb"
+			})); err != nil {
+				return err
+			}
 
-func (r *Repl) Apply() {
-	fmt.Fprintf(r.outStream, "Translate text from %s to %s\n", r.SourceLanguage, r.TargetLanguage)
-	scanner := bufio.NewScanner(r.inStream)
+			trimedSpaceText := strings.TrimSpace(text)
+			if len(trimedSpaceText) == 0 {
+				fmt.Fprintln(ctx.App.ErrWriter, ErrTextLength.Error())
+				continue
+			}
 
-	for {
-		fmt.Fprint(r.outStream, PROMPT)
-		if !scanner.Scan() {
-			return
+			tr, err := client.TranslateText(trimedSpaceText, sourceLanguage, targetLanguage)
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintln(ctx.App.Writer, tr.TranslateText)
 		}
-		text := scanner.Text()
-
-		translation, err := entity.NewTranslation(text, r.Languages)
-		if err != nil {
-			fmt.Fprintln(r.outStream, err)
-			continue
-		}
-
-		resultTranlation, err := r.uc.Translate(translation)
-		if err != nil {
-			fmt.Fprintln(r.outStream, err)
-			break
-		}
-
-		fmt.Fprintln(r.outStream, resultTranlation.TranslatedText)
 	}
 }
