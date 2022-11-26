@@ -16,7 +16,7 @@ go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.4.0
 ## setup
 
 ```shell
-deepl-cli setup
+deepl-cli configure
 ```
 
 See [here](https://www.deepl.com/ja/docs-api/translating-text/) for `source` language and `target` language values.
@@ -24,16 +24,22 @@ See [here](https://www.deepl.com/ja/docs-api/translating-text/) for `source` lan
 ## Usage
 
 ```shell
+NAME:
+   deepl-cli - unofficial DeepL command line tool.
+
 USAGE:
-	deepl-cli [global options] command [command options] [arguments...]
+   deepl-cli [global options] command [command options] [arguments...]
+
+VERSION:
+   v0.4.0
 
 COMMANDS:
-  setup  Setup for using this cli
-  repl   Translate with REPL
+   repl       Translate with REPL.
+   configure  Configure deepl-cli options.
 
 GLOBAL OPTIONS:
-	--help, -h     Show help for command (default: false)
-	--version, -v  show deepl-cli version (default: false)
+   --help, -h     Show help for command (default: false)
+   --version, -v  show deepl-cli version (default: false)
 ```
 
 ## LICENSE
