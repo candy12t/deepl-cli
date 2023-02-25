@@ -10,7 +10,7 @@
 go install:
 
 ```shell
-go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.4.0
+go install github.com/candy12t/deepl-cli/cmd/deepl-cli@v0.4.2
 ```
 
 ## setup
@@ -31,7 +31,7 @@ USAGE:
    deepl-cli [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.4.0
+   v0.4.2
 
 COMMANDS:
    repl       Translate with REPL.
