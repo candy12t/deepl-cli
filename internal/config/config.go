@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -41,7 +40,7 @@ func NewDeepLCLIConfig() *DeepLCLIConfig {
 }
 
 func parseDeepLCLIConfigFile(filename string) (*DeepLCLIConfig, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

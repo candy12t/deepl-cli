@@ -14,8 +14,8 @@ import (
 func TestRun_Success(t *testing.T) {
 	tests := []struct {
 		name         string
-		args         []string
 		wantOut      string
+		args         []string
 		wantExitCode exitCode
 	}{
 		{
@@ -62,14 +62,14 @@ func TestRun_Success(t *testing.T) {
 func TestRun_Failed(t *testing.T) {
 	tests := []struct {
 		name         string
-		args         []string
 		wantOut      string
+		args         []string
 		wantExitCode exitCode
 	}{
 		{
 			name:         "check auth key",
 			args:         strings.Split("deepl-cli repl", " "),
-			wantOut:      fmt.Sprintf("To get started with deepl-cli, please run: `deepl-cli configure`\n"),
+			wantOut:      "To get started with deepl-cli, please run: `deepl-cli configure`\n",
 			wantExitCode: exitErr,
 		},
 	}

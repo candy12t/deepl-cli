@@ -21,7 +21,7 @@ const (
 	AccountPlanIdentificationKey = ":fx"
 )
 
-var _ repository.Translater = &Client{}
+var _ repository.Translator = &Client{}
 
 type Client struct {
 	BaseURL    *url.URL

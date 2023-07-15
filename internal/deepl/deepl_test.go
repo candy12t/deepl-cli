@@ -1,7 +1,7 @@
 package deepl
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -78,7 +78,7 @@ func testMethod(t *testing.T, r *http.Request, want string) {
 
 func testBody(t *testing.T, r *http.Request, want string) {
 	t.Helper()
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if assert.NoError(t, err) {
 		assert.Equal(t, want, string(data))
 	}

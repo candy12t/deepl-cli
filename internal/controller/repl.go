@@ -12,7 +12,7 @@ import (
 
 var ErrTextLength = errors.New("Error: input text length is 0")
 
-func ReplAction(client repository.Translater) cli.ActionFunc {
+func ReplAction(client repository.Translator) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
 		sourceLanguage := ctx.String("source")
 		targetLanguage := ctx.String("target")

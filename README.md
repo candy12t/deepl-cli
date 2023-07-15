@@ -1,6 +1,6 @@
 # deepl-cli
 
-[![Test](https://github.com/candy12t/deepl-cli/actions/workflows/test.yml/badge.svg)](https://github.com/candy12t/deepl-cli/actions/workflows/test.yml)
+[![Test&Lint](https://github.com/candy12t/deepl-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/candy12t/deepl-cli/actions/workflows/ci.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/candy12t/deepl-cli)
 ![GitHub](https://img.shields.io/github/license/candy12t/deepl-cli)
 [![Go Report Card](https://goreportcard.com/badge/github.com/candy12t/deepl-cli)](https://goreportcard.com/report/github.com/candy12t/deepl-cli)

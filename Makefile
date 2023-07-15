@@ -5,7 +5,7 @@ all: test clean build
 
 .PHONY: build
 build:
-	go build -ldflags "-X github.com/candy12t/deepl-cli/internal/build.Version=$(VERSION)" -o $(OBJ) -v ./cmd/deepl-cli
+	CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X github.com/candy12t/deepl-cli/internal/build.Version=$(VERSION)" -o $(OBJ) -v ./cmd/deepl-cli
 
 .PHONY: clean
 clean:
@@ -13,4 +13,4 @@ clean:
 
 .PHONY: test
 test:
-	go test ./... -count=1
+	go test -race ./... -count=1

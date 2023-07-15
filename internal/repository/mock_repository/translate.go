@@ -11,31 +11,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockTranslater is a mock of Translater interface.
-type MockTranslater struct {
+// MockTranslator is a mock of Translator interface.
+type MockTranslator struct {
 	ctrl     *gomock.Controller
-	recorder *MockTranslaterMockRecorder
+	recorder *MockTranslatorMockRecorder
 }
 
-// MockTranslaterMockRecorder is the mock recorder for MockTranslater.
-type MockTranslaterMockRecorder struct {
-	mock *MockTranslater
+// MockTranslatorMockRecorder is the mock recorder for MockTranslator.
+type MockTranslatorMockRecorder struct {
+	mock *MockTranslator
 }
 
-// NewMockTranslater creates a new mock instance.
-func NewMockTranslater(ctrl *gomock.Controller) *MockTranslater {
-	mock := &MockTranslater{ctrl: ctrl}
-	mock.recorder = &MockTranslaterMockRecorder{mock}
+// NewMockTranslator creates a new mock instance.
+func NewMockTranslator(ctrl *gomock.Controller) *MockTranslator {
+	mock := &MockTranslator{ctrl: ctrl}
+	mock.recorder = &MockTranslatorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTranslater) EXPECT() *MockTranslaterMockRecorder {
+func (m *MockTranslator) EXPECT() *MockTranslatorMockRecorder {
 	return m.recorder
 }
 
 // TranslateText mocks base method.
-func (m *MockTranslater) TranslateText(text, sourceLang, targetLang string) (*model.TranslateText, error) {
+func (m *MockTranslator) TranslateText(text, sourceLang, targetLang string) (*model.TranslateText, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TranslateText", text, sourceLang, targetLang)
 	ret0, _ := ret[0].(*model.TranslateText)
@@ -44,7 +44,7 @@ func (m *MockTranslater) TranslateText(text, sourceLang, targetLang string) (*mo
 }
 
 // TranslateText indicates an expected call of TranslateText.
-func (mr *MockTranslaterMockRecorder) TranslateText(text, sourceLang, targetLang interface{}) *gomock.Call {
+func (mr *MockTranslatorMockRecorder) TranslateText(text, sourceLang, targetLang interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TranslateText", reflect.TypeOf((*MockTranslater)(nil).TranslateText), text, sourceLang, targetLang)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TranslateText", reflect.TypeOf((*MockTranslator)(nil).TranslateText), text, sourceLang, targetLang)
 }

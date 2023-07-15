@@ -3,15 +3,15 @@ package deepl
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
 
 type HTTPError struct {
-	StatusCode int
 	RequestURL string
 	Message    string
+	StatusCode int
 }
 
 func (err HTTPError) Error() string {
@@ -32,7 +32,7 @@ func HandleHTTPError(resp *http.Response) error {
 		return httpError
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		httpError.Message = err.Error()
 		return httpError

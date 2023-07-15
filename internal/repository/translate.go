@@ -3,6 +3,6 @@ package repository
 
 import "github.com/candy12t/deepl-cli/internal/model"
 
-type Translater interface {
+type Translator interface {
 	TranslateText(text, sourceLang, targetLang string) (*model.TranslateText, error)
 }
