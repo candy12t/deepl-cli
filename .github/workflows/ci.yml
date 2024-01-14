@@ -1,29 +1,25 @@
 name: CI
+
 on: [push, pull_request]
+
 jobs:
   ci:
-    name: CI
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version-file: ./go.mod
-          cache: false
-
-      - name: Download dependencies
-        run: go mod download
+          cache: true
+          cache-dependency-path: ./go.sum
 
       - name: Run lint
         uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.53
 
-      - name: Run tests
+      - name: Run test
         run: make test
 
       - name: Build
