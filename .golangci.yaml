@@ -3,6 +3,8 @@ run:
 linters-settings:
   govet:
     enable-all: true
+    disable:
+      - shadow
 linters:
   disable-all: true
   enable:
